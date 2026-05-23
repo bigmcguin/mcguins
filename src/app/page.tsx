@@ -7,12 +7,14 @@ import { STATE_LABELS } from '@/lib/utils';
 export const revalidate = 3600; // 1 hour
 
 export default async function HomePage() {
-  const featured = await db.community.findMany({
-    where: { status: 'PUBLISHED', featured: true, deletedAt: null },
-    include: { suburb: true, images: { take: 1, orderBy: { order: 'asc' } } },
-    take: 6,
-    orderBy: { updatedAt: 'desc' },
-  });
+  const featured = await db.community
+    .findMany({
+      where: { status: 'PUBLISHED', featured: true, deletedAt: null },
+      include: { suburb: true, images: { take: 1, orderBy: { order: 'asc' } } },
+      take: 6,
+      orderBy: { updatedAt: 'desc' },
+    })
+    .catch(() => []);
 
   return (
     <>

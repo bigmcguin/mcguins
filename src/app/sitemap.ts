@@ -4,19 +4,8 @@ import { SITE } from '@/lib/seo';
 import { AU_STATES } from '@/lib/validators';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [communities, suburbs] = await Promise.all([
-    db.community.findMany({
-      where: { status: 'PUBLISHED', deletedAt: null },
-      select: { slug: true, updatedAt: true },
-    }),
-    db.suburb.findMany({
-      where: { communities: { some: { status: 'PUBLISHED' } } },
-      select: { slug: true },
-    }),
-  ]);
-
   const base = SITE.url;
-  return [
+  const staticUrls: MetadataRoute.Sitemap = [
     { url: `${base}/`, changeFrequency: 'daily', priority: 1 },
     { url: `${base}/communities`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${base}/map`, changeFrequency: 'weekly', priority: 0.7 },
@@ -26,6 +15,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     })),
+  ];
+
+  // If the database isn't reachable (no DATABASE_URL, transient outage, etc.)
+  // serve a sitemap of just the static URLs rather than failing the build.
+  let communities: { slug: string; updatedAt: Date }[] = [];
+  let suburbs: { slug: string }[] = [];
+  try {
+    [communities, suburbs] = await Promise.all([
+      db.community.findMany({
+        where: { status: 'PUBLISHED', deletedAt: null },
+        select: { slug: true, updatedAt: true },
+      }),
+      db.suburb.findMany({
+        where: { communities: { some: { status: 'PUBLISHED' } } },
+        select: { slug: true },
+      }),
+    ]);
+  } catch {
+    return staticUrls;
+  }
+
+  return [
+    ...staticUrls,
     ...suburbs.map((s) => ({
       url: `${base}/suburbs/${s.slug}`,
       changeFrequency: 'weekly' as const,

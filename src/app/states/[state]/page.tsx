@@ -28,11 +28,13 @@ export default async function StatePage({ params }: { params: { state: string } 
   const label = STATE_LABELS[code];
   if (!label) notFound();
 
-  const communities = await db.community.findMany({
-    where: { state: code, status: 'PUBLISHED', deletedAt: null },
-    include: { suburb: true, images: { take: 1, orderBy: { order: 'asc' } } },
-    orderBy: [{ featured: 'desc' }, { name: 'asc' }],
-  });
+  const communities = await db.community
+    .findMany({
+      where: { state: code, status: 'PUBLISHED', deletedAt: null },
+      include: { suburb: true, images: { take: 1, orderBy: { order: 'asc' } } },
+      orderBy: [{ featured: 'desc' }, { name: 'asc' }],
+    })
+    .catch(() => []);
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">

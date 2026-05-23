@@ -38,19 +38,21 @@ export default async function CommunitiesPage({ searchParams }: Props) {
   };
 
   const [items, total] = await Promise.all([
-    db.community.findMany({
-      where,
-      include: { suburb: true, images: { take: 1, orderBy: { order: 'asc' } } },
-      orderBy:
-        params.sort === 'newest'
-          ? { createdAt: 'desc' }
-          : params.sort === 'price'
-            ? { siteFeesMin: 'asc' }
-            : [{ featured: 'desc' }, { updatedAt: 'desc' }],
-      skip: (params.page - 1) * params.perPage,
-      take: params.perPage,
-    }),
-    db.community.count({ where }),
+    db.community
+      .findMany({
+        where,
+        include: { suburb: true, images: { take: 1, orderBy: { order: 'asc' } } },
+        orderBy:
+          params.sort === 'newest'
+            ? { createdAt: 'desc' }
+            : params.sort === 'price'
+              ? { siteFeesMin: 'asc' }
+              : [{ featured: 'desc' }, { updatedAt: 'desc' }],
+        skip: (params.page - 1) * params.perPage,
+        take: params.perPage,
+      })
+      .catch(() => []),
+    db.community.count({ where }).catch(() => 0),
   ]);
 
   return (
