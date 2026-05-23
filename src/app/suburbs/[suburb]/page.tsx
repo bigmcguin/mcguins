@@ -7,11 +7,15 @@ import { STATE_LABELS } from '@/lib/utils';
 export const revalidate = 60 * 60 * 24 * 7;
 
 export async function generateStaticParams() {
-  const suburbs = await db.suburb.findMany({
-    where: { communities: { some: { status: 'PUBLISHED' } } },
-    select: { slug: true },
-  });
-  return suburbs.map((s) => ({ suburb: s.slug }));
+  try {
+    const suburbs = await db.suburb.findMany({
+      where: { communities: { some: { status: 'PUBLISHED' } } },
+      select: { slug: true },
+    });
+    return suburbs.map((s) => ({ suburb: s.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: { suburb: string } }) {

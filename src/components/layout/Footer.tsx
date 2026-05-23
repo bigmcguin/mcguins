@@ -10,7 +10,7 @@ export function Footer() {
             AU Land Lease
           </p>
           <p className="mt-2 max-w-prose text-brand-700/80">
-            Australia's directory for land lease, lifestyle, over-50s and
+            Australia&apos;s directory for land lease, lifestyle, over-50s and
             manufactured-home communities. Independent listings, real reviews.
           </p>
         </div>

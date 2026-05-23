@@ -1,4 +1,4 @@
-import { Suspense } from 'next';
+import { Suspense } from 'react';
 import { db } from '@/lib/db';
 import { communitySearchSchema } from '@/lib/validators';
 import { CommunityCard } from '@/components/community/CommunityCard';

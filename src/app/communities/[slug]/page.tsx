@@ -10,11 +10,17 @@ import { CommunityGallery } from '@/components/community/CommunityGallery';
 export const revalidate = 60 * 60 * 24 * 7; // weekly ISR
 
 export async function generateStaticParams() {
-  const all = await db.community.findMany({
-    where: { status: 'PUBLISHED', deletedAt: null },
-    select: { slug: true },
-  });
-  return all.map((c) => ({ slug: c.slug }));
+  // Resilient to a missing DATABASE_URL during build (e.g. CI without a DB
+  // attached). Falls back to on-demand rendering rather than failing the build.
+  try {
+    const all = await db.community.findMany({
+      where: { status: 'PUBLISHED', deletedAt: null },
+      select: { slug: true },
+    });
+    return all.map((c) => ({ slug: c.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
