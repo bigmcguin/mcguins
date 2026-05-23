@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  @apply bg-sand-50 text-brand-900 antialiased;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-sand-50;
+}
+
+/* Skip link for keyboard users */
+.skip-link {
+  @apply absolute left-2 top-2 z-50 -translate-y-12 rounded-md bg-brand-700 px-3 py-2 text-white focus:translate-y-0;
+}

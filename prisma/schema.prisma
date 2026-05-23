@@ -1,0 +1,380 @@
+// Prisma schema for the Australian Land Lease Directory.
+// See ARCHITECTURE.md §4 for the design rationale.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis] // enable PostGIS for geo queries
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  OPERATOR
+  ADMIN
+}
+
+enum AustralianState {
+  ACT
+  NSW
+  NT
+  QLD
+  SA
+  TAS
+  VIC
+  WA
+}
+
+enum CommunityStatus {
+  DRAFT       // hidden, in progress
+  UNVERIFIED  // imported from open data, awaiting operator claim
+  PUBLISHED   // visible publicly
+  CLAIMED     // visible, operator-managed
+  ARCHIVED    // soft-deleted
+}
+
+enum CommunityKind {
+  LAND_LEASE
+  LIFESTYLE_VILLAGE
+  OVER_50S
+  MANUFACTURED_HOME
+  CARAVAN_LIFESTYLE_PARK
+  RETIREMENT_VILLAGE
+}
+
+enum FeeFrequency {
+  WEEKLY
+  FORTNIGHTLY
+  MONTHLY
+  ANNUALLY
+}
+
+enum HomeStatus {
+  FOR_SALE
+  UNDER_OFFER
+  SOLD
+  WITHDRAWN
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum EnquiryStatus {
+  NEW
+  ROUTED
+  RESPONDED
+  CLOSED
+  SPAM
+}
+
+enum SubscriptionTier {
+  FREE
+  BASIC
+  FEATURED
+  PREMIUM
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Users & operators
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String        @id @default(cuid())
+  clerkId       String        @unique
+  email         String        @unique
+  name          String?
+  role          Role          @default(USER)
+  operatorId    String?
+  operator      Operator?     @relation(fields: [operatorId], references: [id])
+  favourites    Favourite[]
+  reviews       Review[]
+  enquiries     Enquiry[]
+  savedSearches SavedSearch[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Operator {
+  id                  String           @id @default(cuid())
+  slug                String           @unique
+  name                String
+  legalName           String?
+  abn                 String?          @unique
+  website             String?
+  logoPublicId        String?          // Cloudinary
+  description         String?
+  contactEmail        String?
+  contactPhone        String?
+  subscriptionTier    SubscriptionTier @default(FREE)
+  subscriptionRenewsAt DateTime?
+  leadCreditBalance   Int              @default(0)
+  verified            Boolean          @default(false)
+  members             User[]
+  communities         Community[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Communities
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Community {
+  id            String              @id @default(cuid())
+  slug          String              @unique
+  name          String
+  kind          CommunityKind       @default(LAND_LEASE)
+  status        CommunityStatus     @default(DRAFT)
+
+  // Operator
+  operatorId    String?
+  operator      Operator?           @relation(fields: [operatorId], references: [id])
+
+  // Address
+  addressLine1  String
+  addressLine2  String?
+  suburbId      String
+  suburb        Suburb              @relation(fields: [suburbId], references: [id])
+  state         AustralianState
+  postcode      String
+  // PostGIS point — stored via raw migration:
+  //   ALTER TABLE "Community" ADD COLUMN location geography(Point, 4326);
+  //   CREATE INDEX community_location_idx ON "Community" USING GIST (location);
+  latitude      Float?
+  longitude     Float?
+
+  // Content
+  shortDescription String?
+  description      String?            @db.Text
+  websiteUrl       String?
+  phone            String?
+  emailEnquiries   String?
+
+  // Demographics & features (denormalised for fast filtering)
+  petFriendly      Boolean            @default(false)
+  over50sOnly      Boolean            @default(false)
+  coastal          Boolean            @default(false)
+  ageRestriction   Int?               // e.g. 50, 55
+
+  // Site fees
+  siteFeesMin      Int?               // cents
+  siteFeesMax      Int?               // cents
+  feeFrequency     FeeFrequency?
+
+  // Counts
+  totalHomes       Int?
+  yearEstablished  Int?
+
+  // Monetisation
+  featured         Boolean            @default(false)
+  featuredUntil    DateTime?
+
+  // Provenance
+  source           String?            // URL of the open-data source
+  importBatchId    String?
+
+  // SEO summary cached from AI (Phase 6)
+  aiSummary        String?            @db.Text
+
+  // Relations
+  facilities       CommunityFacility[]
+  images           CommunityImage[]
+  homes            Home[]
+  reviews          Review[]
+  enquiries        Enquiry[]
+  favourites       Favourite[]
+  faqs             CommunityFAQ[]
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deletedAt        DateTime?
+
+  @@index([state])
+  @@index([suburbId])
+  @@index([status])
+  @@index([petFriendly, over50sOnly, coastal])
+  @@index([featured, featuredUntil])
+}
+
+model CommunityImage {
+  id            String     @id @default(cuid())
+  communityId   String
+  community     Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  publicId      String     // Cloudinary
+  alt           String
+  caption       String?
+  order         Int        @default(0)
+  isHero        Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+
+  @@index([communityId, order])
+}
+
+model Facility {
+  id            String              @id @default(cuid())
+  slug          String              @unique  // "swimming-pool"
+  name          String                       // "Swimming Pool"
+  category      String                       // "Recreation", "Wellness", ...
+  icon          String?                      // lucide name
+  communities   CommunityFacility[]
+}
+
+model CommunityFacility {
+  communityId   String
+  community     Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  facilityId    String
+  facility      Facility  @relation(fields: [facilityId], references: [id])
+  notes         String?
+
+  @@id([communityId, facilityId])
+  @@index([facilityId])
+}
+
+model CommunityFAQ {
+  id            String     @id @default(cuid())
+  communityId   String
+  community     Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  question      String
+  answer        String     @db.Text
+  order         Int        @default(0)
+
+  @@index([communityId, order])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Homes for sale
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Home {
+  id            String     @id @default(cuid())
+  communityId   String
+  community     Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  title         String
+  slug          String     @unique
+  status        HomeStatus @default(FOR_SALE)
+  priceCents    Int?
+  bedrooms      Int?
+  bathrooms     Int?
+  carSpaces     Int?
+  floorAreaSqm  Int?
+  description   String?    @db.Text
+  listedAt      DateTime   @default(now())
+  soldAt        DateTime?
+
+  @@index([communityId, status])
+  @@index([status, priceCents])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suburb / locality catalogue (for SEO landing pages + geo)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Suburb {
+  id            String          @id @default(cuid())
+  slug          String          @unique  // "mandurah-wa"
+  name          String                   // "Mandurah"
+  state         AustralianState
+  postcode      String
+  latitude      Float?
+  longitude     Float?
+  communities   Community[]
+
+  @@unique([name, state, postcode])
+  @@index([state])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// User-generated content
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Review {
+  id            String       @id @default(cuid())
+  communityId   String
+  community     Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  rating        Int          // 1..5
+  title         String
+  body          String       @db.Text
+  status        ReviewStatus @default(PENDING)
+  helpfulCount  Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  @@index([communityId, status])
+  @@index([userId])
+}
+
+model Favourite {
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId   String
+  community     Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+
+  @@id([userId, communityId])
+  @@index([communityId])
+}
+
+model Enquiry {
+  id                  String        @id @default(cuid())
+  communityId         String
+  community           Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId              String?
+  user                User?         @relation(fields: [userId], references: [id])
+  name                String
+  email               String
+  phone               String?
+  message             String        @db.Text
+  status              EnquiryStatus @default(NEW)
+  routedToOperatorId  String?       // for audit
+  chargedCents        Int?          // pay-per-lead
+  ipAddress           String?
+  userAgent           String?
+  createdAt           DateTime      @default(now())
+
+  @@index([communityId, status])
+  @@index([createdAt])
+}
+
+model SavedSearch {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  // Stored as JSON so the schema is forward-compatible with new filters
+  filters       Json
+  notifyByEmail Boolean  @default(true)
+  lastRunAt     DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Blog (mirror of Sanity for cross-linking / sitemaps)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id            String   @id @default(cuid())
+  sanityId      String   @unique
+  slug          String   @unique
+  title         String
+  excerpt       String?
+  publishedAt   DateTime?
+  updatedAt     DateTime @updatedAt
+
+  @@index([publishedAt])
+}

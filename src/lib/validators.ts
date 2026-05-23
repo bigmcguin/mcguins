@@ -1,0 +1,38 @@
+import { z } from 'zod';
+
+export const AU_STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'] as const;
+
+export const communitySearchSchema = z.object({
+  q: z.string().optional(),
+  state: z.enum(AU_STATES).optional(),
+  suburb: z.string().optional(),
+  postcode: z.string().regex(/^\d{4}$/).optional(),
+  operatorId: z.string().optional(),
+  petFriendly: z.coerce.boolean().optional(),
+  over50sOnly: z.coerce.boolean().optional(),
+  coastal: z.coerce.boolean().optional(),
+  facilities: z.array(z.string()).optional(),
+  feesMaxCents: z.coerce.number().int().nonnegative().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  perPage: z.coerce.number().int().min(1).max(50).default(20),
+  sort: z.enum(['featured', 'newest', 'rating', 'price']).default('featured'),
+});
+
+export type CommunitySearch = z.infer<typeof communitySearchSchema>;
+
+export const enquirySchema = z.object({
+  communityId: z.string().cuid(),
+  name: z.string().min(2).max(100),
+  email: z.string().email(),
+  phone: z.string().max(40).optional(),
+  message: z.string().min(10).max(2000),
+  // Honeypot — must be empty
+  website: z.string().max(0).optional(),
+});
+
+export const reviewSchema = z.object({
+  communityId: z.string().cuid(),
+  rating: z.number().int().min(1).max(5),
+  title: z.string().min(3).max(120),
+  body: z.string().min(20).max(4000),
+});
