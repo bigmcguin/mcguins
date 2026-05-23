@@ -70,3 +70,16 @@ prisma/
 | `pnpm db:migrate`  | Apply Prisma migrations                    |
 | `pnpm db:seed`     | Seed sample communities                    |
 | `pnpm db:studio`   | Open Prisma Studio                         |
+| `pnpm db:import`   | Import communities from a CSV file. See `docs/CSV_FORMAT.md`. |
+
+## Importing a CSV of communities
+
+```bash
+pnpm db:import ./communities.csv --dry-run   # preview, no writes
+pnpm db:import ./communities.csv             # import as UNVERIFIED
+pnpm db:import ./communities.csv --publish   # import and publish
+```
+
+Header names are matched flexibly (case-insensitive, spaces/underscores
+tolerated). See `docs/CSV_FORMAT.md` for the full column reference and a
+minimal example file.
