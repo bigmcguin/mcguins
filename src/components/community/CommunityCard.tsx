@@ -10,41 +10,72 @@ type Props = {
   };
 };
 
+// Stable placeholder colour per community so cards aren't all the same when
+// images aren't loaded yet. Hashes the slug to pick from a small palette.
+const PLACEHOLDER_TINTS = [
+  'from-teal-700 to-teal-500',
+  'from-teal-800 to-teal-600',
+  'from-ink-700 to-ink-500',
+  'from-teal-600 to-sand-300',
+];
+
 export function CommunityCard({ community }: Props) {
   const img = community.images[0];
-  const src = img ? cloudinaryUrl(img.publicId, 800) : '/placeholder.svg';
+  const src = img ? cloudinaryUrl(img.publicId, 800) : null;
+  const tint = PLACEHOLDER_TINTS[hashCode(community.slug) % PLACEHOLDER_TINTS.length];
 
   return (
-    <article className="group rounded-xl overflow-hidden border border-brand-100 bg-white hover:shadow-lg transition">
-      <Link href={`/communities/${community.slug}`} className="block">
-        <div className="relative aspect-[4/3] bg-sand-100">
-          <Image
-            src={src}
-            alt={img?.alt ?? community.name}
-            fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            className="object-cover group-hover:scale-[1.02] transition"
-          />
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-card hover:-translate-y-0.5 hover:shadow-xl transition">
+      <Link href={`/communities/${community.slug}`} className="flex flex-col h-full">
+        <div className="relative aspect-[4/3] overflow-hidden">
+          {src ? (
+            <Image
+              src={src}
+              alt={img?.alt ?? community.name}
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-cover group-hover:scale-[1.03] transition duration-500"
+            />
+          ) : (
+            <div className={`absolute inset-0 bg-gradient-to-br ${tint}`}>
+              <span className="absolute inset-0 flex items-center justify-center font-display text-3xl text-white/30">
+                {community.name.charAt(0)}
+              </span>
+            </div>
+          )}
           {community.featured && (
-            <span className="absolute top-3 left-3 rounded-full bg-brand-700 text-white text-xs px-2 py-1">
+            <span className="absolute top-3 left-3 rounded-full bg-white/95 text-teal-800 text-xs font-medium px-3 py-1 shadow-sm">
               Featured
             </span>
           )}
+          <span className="absolute bottom-3 left-3 rounded-full bg-ink-900/70 text-white text-xs px-2.5 py-1 backdrop-blur">
+            {community.state}
+          </span>
         </div>
-        <div className="p-4">
-          <h3 className="font-display text-lg font-semibold text-brand-900">
+        <div className="flex flex-col flex-1 p-5">
+          <p className="text-xs uppercase tracking-wider text-ink-500">
+            {community.suburb.name} · {community.postcode}
+          </p>
+          <h3 className="mt-1 font-display text-xl leading-tight text-ink-900 group-hover:text-teal-800 transition">
             {community.name}
           </h3>
-          <p className="mt-1 text-sm text-brand-700/80">
-            {community.suburb.name}, {community.state} {community.postcode}
-          </p>
-          <p className="mt-3 text-sm font-medium text-brand-800">
-            {formatFeeRange(community.siteFeesMin, community.siteFeesMax, community.feeFrequency)}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-1.5 text-xs">
+          {community.shortDescription && (
+            <p className="mt-2 text-sm text-ink-600 line-clamp-2">{community.shortDescription}</p>
+          )}
+          <div className="mt-4 flex flex-wrap gap-1.5 text-xs">
             {community.over50sOnly && <Pill>Over 50s</Pill>}
-            {community.petFriendly && <Pill>Pet friendly</Pill>}
+            {community.petFriendly && <Pill>Pets OK</Pill>}
             {community.coastal && <Pill>Coastal</Pill>}
+            {community.totalHomes && <Pill>{community.totalHomes} homes</Pill>}
+          </div>
+          <div className="mt-auto pt-5 flex items-baseline justify-between border-t border-ink-100">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-ink-500">Site fees</p>
+              <p className="font-display text-base text-ink-900">
+                {formatFeeRange(community.siteFeesMin, community.siteFeesMax, community.feeFrequency)}
+              </p>
+            </div>
+            <span className="text-sm text-teal-700 group-hover:text-teal-900 transition">View &rarr;</span>
           </div>
         </div>
       </Link>
@@ -54,7 +85,7 @@ export function CommunityCard({ community }: Props) {
 
 function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-full bg-brand-50 text-brand-800 px-2 py-0.5">
+    <span className="rounded-full bg-teal-50 text-teal-800 px-2.5 py-0.5">
       {children}
     </span>
   );
@@ -62,6 +93,12 @@ function Pill({ children }: { children: React.ReactNode }) {
 
 function cloudinaryUrl(publicId: string, width: number) {
   const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  if (!cloud) return '/placeholder.svg';
+  if (!cloud) return null;
   return `https://res.cloudinary.com/${cloud}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
+}
+
+function hashCode(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
 }

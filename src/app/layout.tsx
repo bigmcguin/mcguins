@@ -1,16 +1,21 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Fraunces } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { SITE } from '@/lib/seo';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const sans = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const display = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE.name} — Compare land lease communities Australia-wide`,
+    default: `${SITE.name} — Compare Australian land lease communities`,
     template: `%s | ${SITE.name}`,
   },
   description:
@@ -22,7 +27,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en-AU" className={inter.variable}>
+      <html lang="en-AU" className={`${sans.variable} ${display.variable}`}>
         <body className="min-h-screen flex flex-col">
           <a href="#main" className="skip-link">Skip to content</a>
           <Header />

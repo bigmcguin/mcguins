@@ -7,7 +7,13 @@
 }
 
 html, body {
-  @apply bg-sand-50 text-brand-900 antialiased;
+  @apply bg-sand-50 text-ink-900 antialiased;
+}
+
+/* Display headings get the serif by default */
+h1, h2, h3 {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.01em;
 }
 
 a:focus-visible,
@@ -15,10 +21,14 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-sand-50;
+  @apply outline-none ring-2 ring-teal-500 ring-offset-2 ring-offset-sand-50;
 }
 
-/* Skip link for keyboard users */
 .skip-link {
-  @apply absolute left-2 top-2 z-50 -translate-y-12 rounded-md bg-brand-700 px-3 py-2 text-white focus:translate-y-0;
+  @apply absolute left-2 top-2 z-50 -translate-y-12 rounded-md bg-teal-700 px-3 py-2 text-white focus:translate-y-0;
+}
+
+/* Subtle grain on hero panels */
+.bg-grain {
+  background-image: var(--tw-bg-hero-grain, none);
 }

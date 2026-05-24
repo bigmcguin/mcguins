@@ -83,3 +83,19 @@ pnpm db:import ./communities.csv --publish   # import and publish
 Header names are matched flexibly (case-insensitive, spaces/underscores
 tolerated). See `docs/CSV_FORMAT.md` for the full column reference and a
 minimal example file.
+
+## Importing operator-format JSON
+
+If your dataset uses the "Park Chain (Operator)" / "Village Name" /
+"Full Address" column names (the operator spreadsheet format), use the
+JSON importer instead. It deduplicates operators by name, parses
+addresses, fees, age policies and pet policies automatically.
+
+```bash
+# Save your JSON file to data/operators-communities.json first.
+pnpm db:import-json ./data/operators-communities.json --dry-run
+pnpm db:import-json ./data/operators-communities.json
+pnpm db:import-json ./data/operators-communities.json --publish
+```
+
+See `data/operators-communities.sample.json` for the expected shape.

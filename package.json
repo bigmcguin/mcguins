@@ -13,7 +13,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "db:format": "prisma format",
-    "db:import": "tsx scripts/import-csv.ts"
+    "db:import": "tsx scripts/import-csv.ts",
+    "db:import-json": "tsx scripts/import-json.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

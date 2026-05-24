@@ -3,25 +3,29 @@ import { STATE_LABELS } from '@/lib/utils';
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-brand-100 bg-white">
-      <div className="mx-auto max-w-6xl px-6 py-12 grid gap-10 md:grid-cols-4 text-sm">
+    <footer className="mt-20 bg-teal-900 text-teal-50">
+      <div className="mx-auto max-w-6xl px-6 py-16 grid gap-10 md:grid-cols-4 text-sm">
         <div className="md:col-span-2">
-          <p className="font-display text-lg font-semibold text-brand-800">
-            AU Land Lease
-          </p>
-          <p className="mt-2 max-w-prose text-brand-700/80">
-            Australia&apos;s directory for land lease, lifestyle, over-50s and
-            manufactured-home communities. Independent listings, real reviews.
+          <div className="flex items-center gap-2.5">
+            <span aria-hidden className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-white font-display text-lg">
+              ◆
+            </span>
+            <span className="font-display text-lg font-medium text-white">AU Land Lease</span>
+          </div>
+          <p className="mt-4 max-w-prose text-teal-100/80 leading-relaxed">
+            Australia&apos;s independent directory for land lease, lifestyle, over-50s and
+            manufactured-home communities. Real photos, verified operators, transparent
+            site fees, and resident reviews.
           </p>
         </div>
         <div>
-          <p className="font-semibold">Browse by state</p>
-          <ul className="mt-3 space-y-1">
+          <p className="font-medium text-white">Browse by state</p>
+          <ul className="mt-3 space-y-1.5">
             {Object.entries(STATE_LABELS).map(([code, label]) => (
               <li key={code}>
                 <Link
                   href={`/states/${code.toLowerCase()}`}
-                  className="text-brand-700 hover:underline"
+                  className="text-teal-100/80 hover:text-white"
                 >
                   {label}
                 </Link>
@@ -30,18 +34,18 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <p className="font-semibold">About</p>
-          <ul className="mt-3 space-y-1">
-            <li><Link href="/blog" className="text-brand-700 hover:underline">Guides &amp; insights</Link></li>
-            <li><Link href="/operators/claim" className="text-brand-700 hover:underline">List your community</Link></li>
-            <li><Link href="/about" className="text-brand-700 hover:underline">About us</Link></li>
-            <li><Link href="/contact" className="text-brand-700 hover:underline">Contact</Link></li>
-            <li><Link href="/privacy" className="text-brand-700 hover:underline">Privacy</Link></li>
+          <p className="font-medium text-white">About</p>
+          <ul className="mt-3 space-y-1.5">
+            <li><Link href="/blog" className="text-teal-100/80 hover:text-white">Guides &amp; insights</Link></li>
+            <li><Link href="/operators/claim" className="text-teal-100/80 hover:text-white">List your community</Link></li>
+            <li><Link href="/about" className="text-teal-100/80 hover:text-white">About us</Link></li>
+            <li><Link href="/contact" className="text-teal-100/80 hover:text-white">Contact</Link></li>
+            <li><Link href="/privacy" className="text-teal-100/80 hover:text-white">Privacy</Link></li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-brand-100 py-4 text-center text-xs text-brand-700/60">
-        © {new Date().getFullYear()} AU Land Lease Directory
+      <div className="border-t border-white/10 py-5 text-center text-xs text-teal-100/60">
+        © {new Date().getFullYear()} AU Land Lease Directory. Made in Australia.
       </div>
     </footer>
   );
