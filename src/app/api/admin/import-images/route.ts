@@ -5,12 +5,54 @@ import { currentUser } from '@/lib/auth';
 export const maxDuration = 60;
 export const runtime = 'nodejs';
 
-type Entry = {
+// Accepted entry shapes. The original importer used flat fields (village,
+// source_url, description). The newer dataset nests the image fields and
+// uses snake_case (village_name + image.cdn_url). We normalise both into
+// the same internal shape below.
+type FlatEntry = {
   village?: string;
   operator?: string;
   source_url?: string;
   description?: string;
 };
+type NestedEntry = {
+  village_name?: string;
+  operator?: string;
+  image?: {
+    cdn_url?: string;
+    source_url?: string;
+    description?: string;
+  };
+};
+type Entry = FlatEntry | NestedEntry;
+
+type NormalisedEntry = {
+  village?: string;
+  operator?: string;
+  imageUrl?: string;
+  sourcePageUrl?: string;
+  description?: string;
+};
+
+function normaliseEntry(e: Entry): NormalisedEntry {
+  if ('image' in e && e.image) {
+    return {
+      village: e.village_name,
+      operator: e.operator,
+      imageUrl: e.image.cdn_url,
+      sourcePageUrl: e.image.source_url,
+      description: e.image.description,
+    };
+  }
+  const flat = e as FlatEntry;
+  return {
+    village: flat.village,
+    operator: flat.operator,
+    imageUrl: flat.source_url,
+    sourcePageUrl: flat.source_url,
+    description: flat.description,
+  };
+}
 
 type Result =
   | { row: number; village?: string; status: 'imported' }
@@ -58,7 +100,7 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  const entries = body.entries as Entry[];
+  const entries = (body.entries as Entry[]).map(normaliseEntry);
   const replaceExisting = body.replaceExisting ?? false;
 
   // Preload all communities + operators so matching doesn't hit the DB per row.
@@ -90,17 +132,23 @@ export async function POST(req: Request) {
     const row = i + 1;
     const village = e.village ?? '';
 
-    if (!e.village || !e.source_url) {
-      results.push({ row, village, status: 'skipped', reason: 'missing village or source_url' });
+    if (!e.village || !e.imageUrl) {
+      results.push({ row, village, status: 'skipped', reason: 'missing village or image URL' });
       continue;
     }
 
-    if (!isDirectImageUrl(e.source_url)) {
+    if (!isDirectImageUrl(e.imageUrl)) {
+      let host = '';
+      try {
+        host = new URL(e.imageUrl).hostname;
+      } catch {
+        host = 'unparseable URL';
+      }
       results.push({
         row,
         village,
         status: 'skipped',
-        reason: `source_url is a webpage, not a direct image (${new URL(e.source_url).hostname})`,
+        reason: `image URL is a webpage, not a direct image (${host})`,
       });
       continue;
     }
@@ -151,11 +199,11 @@ export async function POST(req: Request) {
     await db.communityImage.create({
       data: {
         communityId,
-        externalUrl: e.source_url,
+        externalUrl: e.imageUrl,
         alt: e.description ?? e.village,
         isHero: true,
         order: 0,
-        sourcePageUrl: e.source_url,
+        sourcePageUrl: e.sourcePageUrl ?? e.imageUrl,
       },
     });
 

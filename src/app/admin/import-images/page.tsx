@@ -30,24 +30,36 @@ export default async function AdminImageImportPage() {
 
       <details className="mt-10 rounded-xl border border-ink-100 bg-white p-5 text-sm text-ink-700">
         <summary className="cursor-pointer font-medium text-ink-900">
-          Expected JSON shape
+          Accepted JSON shapes
         </summary>
-        <pre className="mt-3 overflow-x-auto rounded-md bg-sand-100 p-3 text-xs">{`[
+        <p className="mt-3">Either of these works (both are auto-detected per entry):</p>
+        <pre className="mt-3 overflow-x-auto rounded-md bg-sand-100 p-3 text-xs">{`// Flat
+[
   {
     "village": "The Grange",
     "operator": "Ingenia Communities",
     "source_url": "https://example.com/image.jpg",
     "description": "Aerial view of clubhouse and pool"
-  },
-  ...
+  }
+]
+
+// Nested (matches the "land_lease_communities_with_images" dataset)
+[
+  {
+    "village_name": "The Grange",
+    "operator": "Ingenia Communities",
+    "image": {
+      "cdn_url": "https://example.com/image.jpg",
+      "source_url": "https://example.com/the-grange",
+      "description": "Aerial view of clubhouse and pool"
+    }
+  }
 ]`}</pre>
         <p className="mt-3">
-          A row is <strong>skipped</strong> if the <code>source_url</code> does not
-          end in <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>,{' '}
-          <code>.webp</code>, <code>.gif</code>, or <code>.avif</code>. Webpage
-          URLs like <code>example.com/communities/the-grange</code> can&apos;t be
-          rendered as images, so they get reported back rather than saved as
-          broken images.
+          A row is <strong>skipped</strong> if the image URL doesn&apos;t end in{' '}
+          <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>,{' '}
+          <code>.webp</code>, <code>.gif</code>, or <code>.avif</code> (query
+          strings are ignored). Webpage URLs can&apos;t be rendered as images.
         </p>
       </details>
     </div>
