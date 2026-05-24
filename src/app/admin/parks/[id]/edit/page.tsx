@@ -80,6 +80,22 @@ async function savePark(id: string, formData: FormData) {
   redirect('/admin/parks');
 }
 
+async function deletePark(id: string) {
+  'use server';
+
+  const check = await checkRole(['ADMIN']);
+  if (!check.ok) {
+    throw new Error('Forbidden');
+  }
+
+  // Cascade deletes on the schema clean up images, facilities, reviews,
+  // enquiries, favourites, and FAQs automatically.
+  await db.community.delete({ where: { id } });
+
+  revalidatePath('/admin/parks');
+  redirect('/admin/parks');
+}
+
 export default async function EditParkPage({ params }: { params: { id: string } }) {
   const check = await checkRole(['ADMIN']);
   if (!check.ok) {
@@ -97,6 +113,7 @@ export default async function EditParkPage({ params }: { params: { id: string } 
   if (!park) notFound();
 
   const save = savePark.bind(null, park.id);
+  const remove = deletePark.bind(null, park.id);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -109,7 +126,7 @@ export default async function EditParkPage({ params }: { params: { id: string } 
       <p className="mt-1 text-sm text-ink-600">
         {park.suburb?.name}, {park.state} {park.postcode}
       </p>
-      <ParkEditForm park={park} action={save} />
+      <ParkEditForm park={park} action={save} deleteAction={remove} />
     </div>
   );
 }

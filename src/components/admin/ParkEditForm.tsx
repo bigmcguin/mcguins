@@ -6,6 +6,7 @@ import type { Community } from '@prisma/client';
 type Props = {
   park: Community;
   action: (formData: FormData) => Promise<void>;
+  deleteAction: () => Promise<void>;
 };
 
 const STATUSES = ['DRAFT', 'UNVERIFIED', 'PUBLISHED', 'CLAIMED', 'ARCHIVED'] as const;
@@ -19,8 +20,23 @@ const KINDS = [
 ] as const;
 const FEE_FREQS = ['', 'WEEKLY', 'FORTNIGHTLY', 'MONTHLY', 'ANNUALLY'] as const;
 
-export function ParkEditForm({ park, action }: Props) {
+export function ParkEditForm({ park, action, deleteAction }: Props) {
   const [pending, setPending] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function onDelete() {
+    const confirmed = window.confirm(
+      `Delete "${park.name}" permanently?\n\nThis also removes any associated images, reviews, enquiries, and favourites. This cannot be undone.\n\nIf you just want to hide it from the site, set Status to ARCHIVED instead.`,
+    );
+    if (!confirmed) return;
+    setDeleting(true);
+    try {
+      await deleteAction();
+    } catch (err) {
+      setDeleting(false);
+      window.alert(`Delete failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
 
   return (
     <form
@@ -216,17 +232,27 @@ export function ParkEditForm({ park, action }: Props) {
         </div>
       </Section>
 
-      <div className="flex items-center gap-3 border-t border-ink-100 pt-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-100 pt-6">
+        <div className="flex items-center gap-3">
+          <button
+            type="submit"
+            disabled={pending || deleting}
+            className="rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-50"
+          >
+            {pending ? 'Saving…' : 'Save changes'}
+          </button>
+          <a href="/admin/parks" className="text-sm text-ink-700 hover:text-ink-900">
+            Cancel
+          </a>
+        </div>
         <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-50"
+          type="button"
+          onClick={onDelete}
+          disabled={pending || deleting}
+          className="rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
         >
-          {pending ? 'Saving…' : 'Save changes'}
+          {deleting ? 'Deleting…' : 'Delete park'}
         </button>
-        <a href="/admin/parks" className="text-sm text-ink-700 hover:text-ink-900">
-          Cancel
-        </a>
       </div>
     </form>
   );
