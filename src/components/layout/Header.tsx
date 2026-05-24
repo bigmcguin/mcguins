@@ -16,9 +16,11 @@ export function Header() {
         <Link href="/" className="flex items-center gap-2.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt=""
             aria-hidden
+            width="36"
+            height="36"
             className="h-9 w-9 object-contain"
           />
           <span className="font-display text-lg font-medium text-ink-900 leading-none">
