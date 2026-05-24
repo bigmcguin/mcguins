@@ -5,55 +5,68 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Backwards-compat alias — older files still reference `brand-*`.
-        // Maps onto the new teal scale so existing pages keep working.
+        // Site palette is driven by five base colours:
+        //   Primary    Deep Ocean Blue  #2F5D73  → teal/brand scale (at 500)
+        //   Secondary  Soft Sage Green  #A7B8A0  → sage scale (at 300)
+        //   Background Warm Sand        #F5F1E8  → sand scale (at 100)
+        //   Accent     Muted Teal       #5E8B7E  → terracotta (legacy name kept)
+        //   Text       Charcoal         #333333  → ink scale (at 800)
+        // Other shades are tints/shades of the base so existing utility
+        // classes (e.g. teal-900, ink-400, sand-50) keep working.
         brand: {
-          50:  '#eef6f4',
-          100: '#d6e8e3',
-          200: '#a9cfc6',
-          300: '#77b1a4',
-          400: '#4a8f80',
-          500: '#2e6f62',
-          600: '#23574e',
-          700: '#1d463f',
-          800: '#173934',
-          900: '#0f2624',
+          50:  '#eef3f6',
+          100: '#d8e2e8',
+          200: '#b2c4cf',
+          300: '#84a3b3',
+          400: '#568297',
+          500: '#2f5d73',
+          600: '#264a5c',
+          700: '#1f3e4d',
+          800: '#18303c',
+          900: '#0f1f29',
         },
-        // Editorial deep-teal + warm ink + cream — premium Australian-coastal mood
         ink: {
-          50:  '#f7f6f3',
-          100: '#ecebe6',
-          200: '#d6d4cc',
-          300: '#b4b1a4',
-          400: '#8a8676',
-          500: '#615e51',
-          600: '#46443a',
-          700: '#34322b',
-          800: '#23221e',
-          900: '#15140f',
+          50:  '#f4f4f4',
+          100: '#e5e5e5',
+          200: '#cccccc',
+          300: '#a8a8a8',
+          400: '#7d7d7d',
+          500: '#5a5a5a',
+          600: '#444444',
+          700: '#3a3a3a',
+          800: '#333333',
+          900: '#1f1f1f',
         },
         teal: {
-          50:  '#eef6f4',
-          100: '#d6e8e3',
-          200: '#a9cfc6',
-          300: '#77b1a4',
-          400: '#4a8f80',
-          500: '#2e6f62',
-          600: '#23574e',
-          700: '#1d463f',
-          800: '#173934',
-          900: '#0f2624',
+          50:  '#eef3f6',
+          100: '#d8e2e8',
+          200: '#b2c4cf',
+          300: '#84a3b3',
+          400: '#568297',
+          500: '#2f5d73',
+          600: '#264a5c',
+          700: '#1f3e4d',
+          800: '#18303c',
+          900: '#0f1f29',
         },
         sand: {
-          50:  '#fbf9f3',
-          100: '#f4eedf',
-          200: '#ecdfbd',
-          300: '#dec99a',
-          400: '#c9ab6e',
+          50:  '#fbf9f2',
+          100: '#f5f1e8',
+          200: '#ebe3cf',
+          300: '#d9cba9',
+          400: '#c3ad7c',
+        },
+        sage: {
+          50:  '#f1f4f0',
+          100: '#dee4db',
+          200: '#bfcbb9',
+          300: '#a7b8a0',
+          400: '#8aa280',
+          500: '#6e8a65',
         },
         terracotta: {
-          500: '#c45a3a',
-          600: '#a8462a',
+          500: '#5e8b7e',
+          600: '#4a7167',
         },
       },
       fontFamily: {
@@ -72,7 +85,7 @@ const config: Config = {
           "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>\")",
       },
       boxShadow: {
-        card: '0 1px 2px rgba(15,38,36,0.04), 0 8px 24px -12px rgba(15,38,36,0.18)',
+        card: '0 1px 2px rgba(47,93,115,0.05), 0 8px 24px -12px rgba(47,93,115,0.20)',
       },
     },
   },
