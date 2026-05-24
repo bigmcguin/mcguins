@@ -3,22 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import type { CommunitySearch } from '@/lib/validators';
-
-// Maps a single filter checkbox to one or more canonical facility slugs.
-// "Pool" means either an outdoor or indoor pool; "Tennis" covers tennis or
-// pickleball — most parks list one or the other but not both, and from a
-// buyer's perspective "is there a racquet court?" is the real question.
-export const FEATURE_FILTERS = [
-  { key: 'hasPool', label: 'Pool', slugs: ['outdoor-pool', 'indoor-pool'] },
-  { key: 'hasGym', label: 'Gym', slugs: ['gym'] },
-  { key: 'hasClubhouse', label: 'Clubhouse', slugs: ['clubhouse'] },
-  { key: 'hasBowls', label: 'Bowling green', slugs: ['bowling-green'] },
-  { key: 'hasTennis', label: 'Tennis / pickleball', slugs: ['tennis-court', 'pickleball-court'] },
-  { key: 'hasStorage', label: 'Caravan / boat storage', slugs: ['caravan-boat-storage'] },
-  { key: 'hasTrails', label: 'Walking trails', slugs: ['walking-trails'] },
-  { key: 'hasCommunityBus', label: 'Community bus', slugs: ['community-bus'] },
-  { key: 'hasAccessible', label: 'Accessible amenities', slugs: ['accessible'] },
-] as const satisfies ReadonlyArray<{ key: keyof CommunitySearch; label: string; slugs: string[] }>;
+import { FEATURE_FILTERS } from '@/lib/feature-filters';
 
 export function Filters({ initial }: { initial: CommunitySearch }) {
   const router = useRouter();

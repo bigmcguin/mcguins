@@ -2,7 +2,8 @@ import { Suspense } from 'react';
 import { db } from '@/lib/db';
 import { communitySearchSchema } from '@/lib/validators';
 import { CommunityCard } from '@/components/community/CommunityCard';
-import { Filters, FEATURE_FILTERS } from '@/components/search/Filters';
+import { Filters } from '@/components/search/Filters';
+import { FEATURE_FILTERS } from '@/lib/feature-filters';
 import { pageMetadata } from '@/lib/seo';
 import type { Prisma } from '@prisma/client';
 
