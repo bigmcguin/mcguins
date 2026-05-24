@@ -39,12 +39,24 @@ export default async function AdminDashboard() {
         <Stat label="Reviews pending moderation" value={pendingReviews} />
         <Stat label="New enquiries" value={recentEnquiries} />
       </div>
-      <div className="mt-10">
+      <div className="mt-10 flex flex-wrap gap-3">
+        <Link
+          href="/admin/parks"
+          className="rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-teal-800"
+        >
+          Edit parks
+        </Link>
         <Link
           href="/admin/import"
-          className="inline-block rounded-lg bg-teal-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-teal-800"
+          className="rounded-lg border border-teal-700 px-5 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-50"
         >
-          Import communities (JSON)
+          Import JSON
+        </Link>
+        <Link
+          href="/admin/geocode"
+          className="rounded-lg border border-teal-700 px-5 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-50"
+        >
+          Geocode missing coords
         </Link>
       </div>
     </div>
