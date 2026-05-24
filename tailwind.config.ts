@@ -5,49 +5,51 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Site palette is driven by five base colours:
-        //   Primary    Deep Ocean Blue  #2F5D73  → teal/brand scale (at 700, the button slot)
-        //   Secondary  Soft Sage Green  #A7B8A0  → sage scale (at 300)
-        //   Background Warm Sand        #F5F1E8  → sand scale (at 100)
-        //   Accent     Muted Teal       #5E8B7E  → terracotta (legacy name kept)
-        //   Text       Charcoal         #333333  → ink scale (at 900, the body-text slot)
+        // Site palette is driven by the LLL brand pack:
+        //   LLL Blue   #305A72  → teal/brand scale at 700 (sampled from the logo)
+        //   Charcoal   #1A1A1A  → ink scale at 900 (body text)
+        //   Muted text #6B7783  → ink scale at 500 (tints toward LLL Blue)
+        //   Off-white  #F7F8F9  → ink scale at 50 (subtle panel backgrounds)
+        //   Warm Sand  #F5F1E8  → sand scale at 100 (page background)
+        //   Muted Teal #5E8B7E  → terracotta (accent, legacy name kept)
+        //   Sage Green #A7B8A0  → sage scale at 300 (secondary accent)
         // Other shades are tints/shades of the base so existing utility
         // classes (e.g. teal-50, sand-50) keep working.
         brand: {
-          50:  '#f0f5f8',
-          100: '#dae6ec',
-          200: '#b3cad6',
-          300: '#82a8bb',
-          400: '#5285a1',
-          500: '#406e89',
-          600: '#366380',
-          700: '#2f5d73',
-          800: '#234657',
-          900: '#18303d',
+          50:  '#e1e8ee',
+          100: '#d0dae3',
+          200: '#a8bac7',
+          300: '#83a0b2',
+          400: '#5c7f95',
+          500: '#467088',
+          600: '#3a6580',
+          700: '#305a72',
+          800: '#234557',
+          900: '#172f3d',
         },
         ink: {
-          50:  '#f7f7f7',
-          100: '#ededed',
-          200: '#d4d4d4',
-          300: '#b0b0b0',
-          400: '#888888',
-          500: '#6b6b6b',
-          600: '#525252',
-          700: '#424242',
-          800: '#3a3a3a',
-          900: '#333333',
+          50:  '#f7f8f9',
+          100: '#e8eaed',
+          200: '#c9ced3',
+          300: '#a8b0b7',
+          400: '#88929b',
+          500: '#6b7783',
+          600: '#525c66',
+          700: '#3a4148',
+          800: '#25282b',
+          900: '#1a1a1a',
         },
         teal: {
-          50:  '#f0f5f8',
-          100: '#dae6ec',
-          200: '#b3cad6',
-          300: '#82a8bb',
-          400: '#5285a1',
-          500: '#406e89',
-          600: '#366380',
-          700: '#2f5d73',
-          800: '#234657',
-          900: '#18303d',
+          50:  '#e1e8ee',
+          100: '#d0dae3',
+          200: '#a8bac7',
+          300: '#83a0b2',
+          400: '#5c7f95',
+          500: '#467088',
+          600: '#3a6580',
+          700: '#305a72',
+          800: '#234557',
+          900: '#172f3d',
         },
         sand: {
           50:  '#fbf9f2',

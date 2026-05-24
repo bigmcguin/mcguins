@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Fraunces } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Header } from '@/components/layout/Header';
@@ -21,7 +21,12 @@ export const metadata: Metadata = {
   description:
     'Find and compare Australian land lease communities, lifestyle villages and over-50s communities. Real photos, site fees, reviews and homes for sale.',
   metadataBase: new URL(SITE.url),
+  manifest: '/site.webmanifest',
   openGraph: { locale: 'en_AU' },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#305a72',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
