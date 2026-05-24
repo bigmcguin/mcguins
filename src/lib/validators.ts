@@ -4,13 +4,25 @@ export const AU_STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'] a
 
 export const communitySearchSchema = z.object({
   q: z.string().optional(),
+  name: z.string().optional(),
   state: z.enum(AU_STATES).optional(),
   suburb: z.string().optional(),
   postcode: z.string().regex(/^\d{4}$/).optional(),
   operatorId: z.string().optional(),
+  // Lifestyle policy
   petFriendly: z.coerce.boolean().optional(),
   over50sOnly: z.coerce.boolean().optional(),
   coastal: z.coerce.boolean().optional(),
+  // Feature filters — each maps to one or more facility slugs in the page
+  hasPool: z.coerce.boolean().optional(),
+  hasGym: z.coerce.boolean().optional(),
+  hasClubhouse: z.coerce.boolean().optional(),
+  hasBowls: z.coerce.boolean().optional(),
+  hasTennis: z.coerce.boolean().optional(),
+  hasStorage: z.coerce.boolean().optional(),
+  hasTrails: z.coerce.boolean().optional(),
+  hasCommunityBus: z.coerce.boolean().optional(),
+  hasAccessible: z.coerce.boolean().optional(),
   facilities: z.array(z.string()).optional(),
   feesMaxCents: z.coerce.number().int().nonnegative().optional(),
   page: z.coerce.number().int().min(1).default(1),

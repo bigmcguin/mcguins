@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { db } from '@/lib/db';
 import { communitySearchSchema } from '@/lib/validators';
 import { CommunityCard } from '@/components/community/CommunityCard';
-import { Filters } from '@/components/search/Filters';
+import { Filters, FEATURE_FILTERS } from '@/components/search/Filters';
 import { pageMetadata } from '@/lib/seo';
 import type { Prisma } from '@prisma/client';
 
@@ -21,6 +21,18 @@ export default async function CommunitiesPage({ searchParams }: Props) {
   const parsed = communitySearchSchema.safeParse(searchParams);
   const params = parsed.success ? parsed.data : communitySearchSchema.parse({});
 
+  // Each feature filter maps to a list of facility slugs — any one of those
+  // present on the community satisfies the filter. Combined as AND so the
+  // user can require multiple features at once.
+  const facilityClauses: Prisma.CommunityWhereInput[] = [];
+  for (const f of FEATURE_FILTERS) {
+    if (params[f.key]) {
+      facilityClauses.push({
+        facilities: { some: { facility: { slug: { in: f.slugs } } } },
+      });
+    }
+  }
+
   const where: Prisma.CommunityWhereInput = {
     status: 'PUBLISHED',
     deletedAt: null,
@@ -29,12 +41,17 @@ export default async function CommunitiesPage({ searchParams }: Props) {
     ...(params.petFriendly && { petFriendly: true }),
     ...(params.over50sOnly && { over50sOnly: true }),
     ...(params.coastal && { coastal: true }),
+    ...(params.name && {
+      name: { contains: params.name, mode: 'insensitive' },
+    }),
     ...(params.q && {
       OR: [
         { name: { contains: params.q, mode: 'insensitive' } },
         { suburb: { name: { contains: params.q, mode: 'insensitive' } } },
+        ...(/^\d{4}$/.test(params.q) ? [{ postcode: params.q }] : []),
       ],
     }),
+    ...(facilityClauses.length > 0 && { AND: facilityClauses }),
   };
 
   const [items, total] = await Promise.all([

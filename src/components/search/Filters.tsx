@@ -1,12 +1,30 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import type { CommunitySearch } from '@/lib/validators';
+
+// Maps a single filter checkbox to one or more canonical facility slugs.
+// "Pool" means either an outdoor or indoor pool; "Tennis" covers tennis or
+// pickleball — most parks list one or the other but not both, and from a
+// buyer's perspective "is there a racquet court?" is the real question.
+export const FEATURE_FILTERS = [
+  { key: 'hasPool', label: 'Pool', slugs: ['outdoor-pool', 'indoor-pool'] },
+  { key: 'hasGym', label: 'Gym', slugs: ['gym'] },
+  { key: 'hasClubhouse', label: 'Clubhouse', slugs: ['clubhouse'] },
+  { key: 'hasBowls', label: 'Bowling green', slugs: ['bowling-green'] },
+  { key: 'hasTennis', label: 'Tennis / pickleball', slugs: ['tennis-court', 'pickleball-court'] },
+  { key: 'hasStorage', label: 'Caravan / boat storage', slugs: ['caravan-boat-storage'] },
+  { key: 'hasTrails', label: 'Walking trails', slugs: ['walking-trails'] },
+  { key: 'hasCommunityBus', label: 'Community bus', slugs: ['community-bus'] },
+  { key: 'hasAccessible', label: 'Accessible amenities', slugs: ['accessible'] },
+] as const satisfies ReadonlyArray<{ key: keyof CommunitySearch; label: string; slugs: string[] }>;
 
 export function Filters({ initial }: { initial: CommunitySearch }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [nameDraft, setNameDraft] = useState(initial.name ?? '');
+  const [postcodeDraft, setPostcodeDraft] = useState(initial.postcode ?? '');
 
   const update = useCallback(
     (key: string, value: string | null) => {
@@ -19,14 +37,67 @@ export function Filters({ initial }: { initial: CommunitySearch }) {
     [router, searchParams],
   );
 
+  const clearAll = useCallback(() => {
+    setNameDraft('');
+    setPostcodeDraft('');
+    router.push('/communities');
+  }, [router]);
+
+  // Count active non-default filters so the "Reset" button shows a useful badge
+  const activeCount = countActive(initial);
+
   return (
-    <div className="rounded-xl border border-brand-100 bg-white p-5 space-y-5">
+    <div className="rounded-xl border border-ink-100 bg-white p-5 space-y-5">
       <fieldset>
-        <legend className="font-semibold">State</legend>
+        <legend className="font-medium text-ink-900">Park name</legend>
+        <input
+          type="search"
+          defaultValue={initial.name ?? ''}
+          value={nameDraft}
+          onChange={(e) => setNameDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              update('name', nameDraft || null);
+            }
+          }}
+          onBlur={() => {
+            if ((initial.name ?? '') !== nameDraft) update('name', nameDraft || null);
+          }}
+          placeholder="e.g. Halcyon Greens"
+          className="mt-2 w-full rounded-md border border-ink-200 bg-white p-2 text-sm focus:border-teal-700 focus:outline-none"
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend className="font-medium text-ink-900">Postcode</legend>
+        <input
+          inputMode="numeric"
+          pattern="\d{4}"
+          maxLength={4}
+          value={postcodeDraft}
+          onChange={(e) => setPostcodeDraft(e.target.value.replace(/\D/g, ''))}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              update('postcode', /^\d{4}$/.test(postcodeDraft) ? postcodeDraft : null);
+            }
+          }}
+          onBlur={() => {
+            const cleaned = /^\d{4}$/.test(postcodeDraft) ? postcodeDraft : null;
+            if ((initial.postcode ?? null) !== cleaned) update('postcode', cleaned);
+          }}
+          placeholder="e.g. 4220"
+          className="mt-2 w-full rounded-md border border-ink-200 bg-white p-2 text-sm focus:border-teal-700 focus:outline-none"
+        />
+      </fieldset>
+
+      <fieldset>
+        <legend className="font-medium text-ink-900">State</legend>
         <select
           defaultValue={initial.state ?? ''}
           onChange={(e) => update('state', e.target.value || null)}
-          className="mt-2 w-full rounded-md border border-brand-200 bg-white p-2"
+          className="mt-2 w-full rounded-md border border-ink-200 bg-white p-2 text-sm focus:border-teal-700 focus:outline-none"
         >
           <option value="">All states</option>
           {['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'].map((s) => (
@@ -35,19 +106,8 @@ export function Filters({ initial }: { initial: CommunitySearch }) {
         </select>
       </fieldset>
 
-      <fieldset>
-        <legend className="font-semibold">Postcode</legend>
-        <input
-          inputMode="numeric"
-          pattern="\d{4}"
-          defaultValue={initial.postcode ?? ''}
-          onBlur={(e) => update('postcode', e.target.value || null)}
-          className="mt-2 w-full rounded-md border border-brand-200 bg-white p-2"
-        />
-      </fieldset>
-
       <fieldset className="space-y-2">
-        <legend className="font-semibold">Lifestyle</legend>
+        <legend className="font-medium text-ink-900">Lifestyle</legend>
         <Toggle
           label="Pet friendly"
           checked={!!initial.petFriendly}
@@ -65,18 +125,40 @@ export function Filters({ initial }: { initial: CommunitySearch }) {
         />
       </fieldset>
 
+      <fieldset className="space-y-2">
+        <legend className="font-medium text-ink-900">Features</legend>
+        {FEATURE_FILTERS.map((f) => (
+          <Toggle
+            key={f.key}
+            label={f.label}
+            checked={!!initial[f.key]}
+            onChange={(v) => update(f.key, v ? 'true' : null)}
+          />
+        ))}
+      </fieldset>
+
       <fieldset>
-        <legend className="font-semibold">Sort by</legend>
+        <legend className="font-medium text-ink-900">Sort by</legend>
         <select
           defaultValue={initial.sort}
           onChange={(e) => update('sort', e.target.value)}
-          className="mt-2 w-full rounded-md border border-brand-200 bg-white p-2"
+          className="mt-2 w-full rounded-md border border-ink-200 bg-white p-2 text-sm focus:border-teal-700 focus:outline-none"
         >
           <option value="featured">Featured</option>
           <option value="newest">Newest</option>
           <option value="price">Site fees: low to high</option>
         </select>
       </fieldset>
+
+      {activeCount > 0 && (
+        <button
+          type="button"
+          onClick={clearAll}
+          className="w-full rounded-md border border-ink-200 px-3 py-2 text-sm text-ink-700 hover:bg-sand-50"
+        >
+          Clear all filters ({activeCount})
+        </button>
+      )}
     </div>
   );
 }
@@ -91,14 +173,28 @@ function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex items-center gap-2">
+    <label className="flex items-center gap-2 text-sm text-ink-800">
       <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="h-4 w-4 rounded border-brand-300 text-brand-700"
+        className="h-4 w-4 rounded border-ink-300 text-teal-700 focus:ring-teal-700"
       />
       <span>{label}</span>
     </label>
   );
+}
+
+function countActive(s: CommunitySearch): number {
+  let n = 0;
+  if (s.name) n++;
+  if (s.postcode) n++;
+  if (s.state) n++;
+  if (s.petFriendly) n++;
+  if (s.over50sOnly) n++;
+  if (s.coastal) n++;
+  for (const f of FEATURE_FILTERS) {
+    if (s[f.key]) n++;
+  }
+  return n;
 }
