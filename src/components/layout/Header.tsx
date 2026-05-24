@@ -1,5 +1,13 @@
 import Link from 'next/link';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { MobileMenu } from './MobileMenu';
+
+const NAV_ITEMS = [
+  { href: '/communities', label: 'Browse' },
+  { href: '/map', label: 'Map' },
+  { href: '/compare', label: 'Compare' },
+  { href: '/blog', label: 'Guides' },
+];
 
 export function Header() {
   return (
@@ -17,10 +25,15 @@ export function Header() {
           </span>
         </Link>
         <nav aria-label="Primary" className="hidden md:flex items-center gap-7 text-sm">
-          <Link href="/communities" className="text-ink-700 hover:text-teal-800">Browse</Link>
-          <Link href="/map" className="text-ink-700 hover:text-teal-800">Map</Link>
-          <Link href="/compare" className="text-ink-700 hover:text-teal-800">Compare</Link>
-          <Link href="/blog" className="text-ink-700 hover:text-teal-800">Guides</Link>
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-ink-700 hover:text-teal-800"
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
         <div className="flex items-center gap-3">
           <SignedOut>
@@ -36,6 +49,7 @@ export function Header() {
             </Link>
             <UserButton />
           </SignedIn>
+          <MobileMenu items={NAV_ITEMS} />
         </div>
       </div>
     </header>
