@@ -123,12 +123,113 @@ function parseAgePolicy(v: string | undefined): { over50sOnly: boolean; age?: nu
   return { over50sOnly: false };
 }
 
-function detectCoastal(row: OperatorRow): boolean {
-  const haystack = [row['Region/Area'], row['Village Name'], row['Full Address']]
+// Heuristic: marks a park as coastal if its name, suburb, or street address
+// contains any of the keywords below OR matches a known coastal Australian
+// town. This is imperfect by design — the admin can override on a per-park
+// basis via the editor.
+const COASTAL_KEYWORDS = [
+  'beach', 'beaches',
+  'bay', 'bays', 'bayside',
+  'coast', 'coastal',
+  'shore', 'shores', 'foreshore',
+  'harbour', 'harbor',
+  'seaside', 'seafront',
+  'cove',
+  'inlet',
+  'point', 'points',
+  'head', 'heads', 'headland',
+  'sands', 'sandy',
+  'waters', 'waterfront',
+  'marina',
+  'ocean', 'oceanside',
+  'sea', 'surf', 'surfside',
+  'island',
+  'jetty', 'pier',
+  'esplanade',
+  'peninsula',
+];
+
+// Well-known coastal Australian towns/suburbs that wouldn't be caught by the
+// keyword list above. Lowercase.
+const COASTAL_TOWNS = new Set([
+  // NSW
+  'terrigal', 'avoca', 'copacabana', 'killcare', 'macmasters',
+  'wamberal', 'forresters', 'redhead', 'caves', 'swansea',
+  'byron', 'ballina', 'yamba', 'kingscliff', 'lennox',
+  'forster', 'tuncurry', 'taree', 'old bar', 'hallidays', 'wallabi',
+  'anna', 'salamander', 'nelson', 'fingal', 'soldiers', 'tea gardens',
+  'ulladulla', 'mollymook', 'batemans', 'merimbula', 'eden', 'narooma', 'tathra',
+  'huskisson', 'vincentia', 'jervis', 'sussex', 'callala',
+  'wollongong', 'kiama', 'shellharbour', 'gerringong', 'gerroa',
+  'bondi', 'cronulla', 'manly', 'coogee', 'maroubra', 'freshwater', 'dee why',
+  'palm beach', 'avalon', 'newport', 'mona vale', 'bilgola',
+  'bulli', 'thirroul', 'austinmer',
+  // QLD
+  'noosa', 'mooloolaba', 'maroochydore', 'caloundra', 'coolum', 'peregian',
+  'burleigh', 'coolangatta', 'surfers paradise', 'broadbeach', 'mermaid',
+  'currumbin', 'tugun', 'kirra', 'bilinga', 'main beach',
+  'bargara', 'hervey', 'urangan', 'rainbow',
+  'cairns', 'port douglas', 'mission', 'palm cove', 'trinity', 'machans',
+  'agnes water', 'seventeen seventy',
+  'yeppoon', 'emu park', 'capricorn',
+  'redcliffe', 'scarborough', 'sandgate', 'bribie', 'beachmere',
+  'mackay', 'airlie', 'whitsunday',
+  // VIC
+  'portsea', 'sorrento', 'rye', 'rosebud', 'mornington', 'dromana', 'safety beach',
+  'frankston', 'mount martha', 'mccrae', 'capel sound',
+  'williamstown', 'altona', 'st kilda', 'brighton',
+  'geelong', 'torquay', 'jan juc', 'anglesea', 'aireys',
+  'ocean grove', 'barwon', 'lorne', 'apollo', 'port fairy', 'warrnambool',
+  'phillip', 'cowes', 'rhyll', 'inverloch', 'venus', 'cape paterson',
+  'lakes entrance', 'paynesville', 'metung', 'mallacoota',
+  // SA
+  'glenelg', 'henley', 'semaphore', 'brighton', 'seacliff',
+  'encounter', 'goolwa', 'victor harbor', 'port elliot', 'middleton',
+  'normanville', 'second valley', 'cape jervis',
+  'port lincoln', 'streaky', 'ceduna',
+  // WA
+  'mandurah', 'rockingham', 'bunbury', 'busselton', 'dunsborough', 'yallingup',
+  'margaret river', 'gracetown', 'prevelly',
+  'albany', 'denmark', 'esperance', 'bremer',
+  'geraldton', 'kalbarri', 'monkey mia', 'shark', 'denham',
+  'exmouth', 'coral bay', 'carnarvon',
+  'broome', 'cable beach',
+  'cottesloe', 'scarborough', 'trigg', 'sorrento', 'hillarys', 'mullaloo',
+  'fremantle', 'south beach', 'leighton', 'north beach',
+  // TAS
+  'hobart', 'sandy bay', 'bellerive',
+  'devonport', 'burnie', 'wynyard',
+  'st helens', 'bicheno', 'coles bay',
+  // NT
+  'darwin', 'nightcliff', 'rapid creek', 'casuarina',
+]);
+
+export function isCoastal(parts: {
+  name?: string | null;
+  suburb?: string | null;
+  address?: string | null;
+}): boolean {
+  const haystack = [parts.name, parts.suburb, parts.address]
     .filter(Boolean)
     .join(' ')
     .toLowerCase();
-  return /\b(beach|bay|coast|shore|harbour|harbor|seaside|cove|inlet|lake|river)\b/.test(haystack);
+  if (!haystack) return false;
+
+  const keywordPattern = new RegExp(`\\b(${COASTAL_KEYWORDS.join('|')})\\b`);
+  if (keywordPattern.test(haystack)) return true;
+
+  for (const town of COASTAL_TOWNS) {
+    if (haystack.includes(town)) return true;
+  }
+  return false;
+}
+
+function detectCoastal(row: OperatorRow): boolean {
+  return isCoastal({
+    name: row['Village Name'],
+    suburb: row['Region/Area'],
+    address: row['Full Address'],
+  });
 }
 
 const FREQ_MAP: Record<string, FeeFrequency> = {
