@@ -6,48 +6,48 @@ const config: Config = {
     extend: {
       colors: {
         // Site palette is driven by five base colours:
-        //   Primary    Deep Ocean Blue  #2F5D73  → teal/brand scale (at 500)
+        //   Primary    Deep Ocean Blue  #2F5D73  → teal/brand scale (at 700, the button slot)
         //   Secondary  Soft Sage Green  #A7B8A0  → sage scale (at 300)
         //   Background Warm Sand        #F5F1E8  → sand scale (at 100)
         //   Accent     Muted Teal       #5E8B7E  → terracotta (legacy name kept)
-        //   Text       Charcoal         #333333  → ink scale (at 800)
+        //   Text       Charcoal         #333333  → ink scale (at 900, the body-text slot)
         // Other shades are tints/shades of the base so existing utility
-        // classes (e.g. teal-900, ink-400, sand-50) keep working.
+        // classes (e.g. teal-50, sand-50) keep working.
         brand: {
-          50:  '#eef3f6',
-          100: '#d8e2e8',
-          200: '#b2c4cf',
-          300: '#84a3b3',
-          400: '#568297',
-          500: '#2f5d73',
-          600: '#264a5c',
-          700: '#1f3e4d',
-          800: '#18303c',
-          900: '#0f1f29',
+          50:  '#f0f5f8',
+          100: '#dae6ec',
+          200: '#b3cad6',
+          300: '#82a8bb',
+          400: '#5285a1',
+          500: '#406e89',
+          600: '#366380',
+          700: '#2f5d73',
+          800: '#234657',
+          900: '#18303d',
         },
         ink: {
-          50:  '#f4f4f4',
-          100: '#e5e5e5',
-          200: '#cccccc',
-          300: '#a8a8a8',
-          400: '#7d7d7d',
-          500: '#5a5a5a',
-          600: '#444444',
-          700: '#3a3a3a',
-          800: '#333333',
-          900: '#1f1f1f',
+          50:  '#f7f7f7',
+          100: '#ededed',
+          200: '#d4d4d4',
+          300: '#b0b0b0',
+          400: '#888888',
+          500: '#6b6b6b',
+          600: '#525252',
+          700: '#424242',
+          800: '#3a3a3a',
+          900: '#333333',
         },
         teal: {
-          50:  '#eef3f6',
-          100: '#d8e2e8',
-          200: '#b2c4cf',
-          300: '#84a3b3',
-          400: '#568297',
-          500: '#2f5d73',
-          600: '#264a5c',
-          700: '#1f3e4d',
-          800: '#18303c',
-          900: '#0f1f29',
+          50:  '#f0f5f8',
+          100: '#dae6ec',
+          200: '#b3cad6',
+          300: '#82a8bb',
+          400: '#5285a1',
+          500: '#406e89',
+          600: '#366380',
+          700: '#2f5d73',
+          800: '#234657',
+          900: '#18303d',
         },
         sand: {
           50:  '#fbf9f2',
