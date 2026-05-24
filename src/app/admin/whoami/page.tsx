@@ -13,12 +13,9 @@ async function promoteToAdmin() {
   const { userId } = auth();
   if (!userId) redirect('/sign-in');
 
-  // Only allowed when there's no admin in the system at all — this is the
-  // bootstrap escape hatch for the project owner.
   const adminCount = await db.user.count({ where: { role: 'ADMIN' } });
-  if (adminCount > 0) {
-    return;
-  }
+  if (adminCount > 0) return;
+
   await db.user.update({
     where: { clerkId: userId },
     data: { role: 'ADMIN' },
@@ -43,11 +40,56 @@ export default async function WhoamiPage() {
     );
   }
 
-  // currentUser() creates the row if missing and self-heals to ADMIN when
-  // there are no admins yet — so just calling this is often enough to fix
-  // the "I signed up but I'm not admin" case.
-  const me = await currentUser();
-  const adminCount = await db.user.count({ where: { role: 'ADMIN' } });
+  // Try to load state — any error here almost certainly means the schema
+  // hasn't been pushed to the database yet.
+  let me, adminCount;
+  try {
+    me = await currentUser();
+    adminCount = await db.user.count({ where: { role: 'ADMIN' } });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return (
+      <Shell>
+        <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-900">
+          <h2 className="font-medium text-red-900">Database not ready</h2>
+          <p className="mt-2">
+            The database connection works, but the tables don&apos;t exist yet.
+            This means the schema push step in the build didn&apos;t run, or it
+            failed.
+          </p>
+          <p className="mt-3 font-medium">How to fix:</p>
+          <ol className="mt-2 list-decimal space-y-1 pl-5">
+            <li>
+              In Vercel → Settings → Environment Variables, make sure{' '}
+              <code>DATABASE_URL</code> is set for{' '}
+              <strong>Production, Preview AND Development</strong> (all three
+              ticked).
+            </li>
+            <li>
+              If your DATABASE_URL contains <code>-pooler</code> in the host
+              (the standard Neon pooled URL), that&apos;s fine — the build now
+              auto-derives the direct URL.
+            </li>
+            <li>
+              Trigger a fresh deploy: Deployments → ⋯ menu on latest →{' '}
+              <strong>Redeploy</strong>. The build log will show whether the
+              schema push succeeded (look for{' '}
+              <code>[db-sync] Schema pushed.</code>).
+            </li>
+            <li>Reload this page once the new deploy is live.</li>
+          </ol>
+          <details className="mt-4">
+            <summary className="cursor-pointer text-xs text-red-700">
+              Raw error (for debugging)
+            </summary>
+            <pre className="mt-2 whitespace-pre-wrap break-words text-xs">
+              {message}
+            </pre>
+          </details>
+        </div>
+      </Shell>
+    );
+  }
 
   return (
     <Shell>
