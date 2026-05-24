@@ -12,9 +12,14 @@ type Summary = {
 
 type FormState =
   | { kind: 'idle' }
-  | { kind: 'submitting' }
+  | { kind: 'submitting'; done: number; total: number }
   | { kind: 'done'; dryRun: boolean; summary: Summary }
   | { kind: 'error'; message: string };
+
+// Vercel's serverless functions can only run for 60 seconds. ~30 rows is a
+// comfortable batch size that completes in 10-15 seconds, leaving plenty of
+// headroom for slow operator/suburb upserts.
+const CHUNK_SIZE = 30;
 
 export function ImportForm() {
   const [text, setText] = useState('');
@@ -27,10 +32,13 @@ export function ImportForm() {
   }
 
   async function submit(opts: { dryRun: boolean; publish: boolean }) {
-    setState({ kind: 'submitting' });
-    let rows: unknown;
+    let rows: unknown[];
     try {
-      rows = JSON.parse(text);
+      const parsed = JSON.parse(text);
+      if (!Array.isArray(parsed)) {
+        throw new Error('The JSON must be an array (start with [ and end with ]).');
+      }
+      rows = parsed;
     } catch (err) {
       setState({
         kind: 'error',
@@ -38,23 +46,60 @@ export function ImportForm() {
       });
       return;
     }
-    if (!Array.isArray(rows)) {
-      setState({ kind: 'error', message: 'The JSON must be an array (start with [ and end with ]).' });
-      return;
+
+    const batchId = `import-${new Date().toISOString()}`;
+    const aggregate: Summary = {
+      total: rows.length,
+      imported: 0,
+      skipped: 0,
+      errors: [],
+      batchId,
+    };
+
+    setState({ kind: 'submitting', done: 0, total: rows.length });
+
+    for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
+      const chunk = rows.slice(i, i + CHUNK_SIZE);
+      try {
+        const res = await fetch('/api/admin/import-json', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rows: chunk,
+            dryRun: opts.dryRun,
+            publish: opts.publish,
+            batchId,
+            rowOffset: i,
+          }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          setState({
+            kind: 'error',
+            message: `Batch starting at row ${i + 1} failed (${res.status}): ${body.error ?? res.statusText}. ${aggregate.imported} rows were already imported before this batch.`,
+          });
+          return;
+        }
+        const chunkSummary = (await res.json()) as Summary;
+        aggregate.imported += chunkSummary.imported;
+        aggregate.skipped += chunkSummary.skipped;
+        aggregate.errors.push(...chunkSummary.errors);
+      } catch (err) {
+        setState({
+          kind: 'error',
+          message: `Network error on batch starting at row ${i + 1}: ${err instanceof Error ? err.message : String(err)}. ${aggregate.imported} rows were already imported.`,
+        });
+        return;
+      }
+
+      setState({
+        kind: 'submitting',
+        done: Math.min(i + CHUNK_SIZE, rows.length),
+        total: rows.length,
+      });
     }
 
-    const res = await fetch('/api/admin/import-json', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rows, dryRun: opts.dryRun, publish: opts.publish }),
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      setState({ kind: 'error', message: body.error ?? `Server returned ${res.status}` });
-      return;
-    }
-    const summary = (await res.json()) as Summary;
-    setState({ kind: 'done', dryRun: opts.dryRun, summary });
+    setState({ kind: 'done', dryRun: opts.dryRun, summary: aggregate });
   }
 
   return (
@@ -120,9 +165,21 @@ export function ImportForm() {
       </div>
 
       {state.kind === 'submitting' && (
-        <p role="status" className="rounded-md bg-teal-50 p-4 text-teal-800">
-          Importing… this can take 30-60 seconds for 200+ rows.
-        </p>
+        <div role="status" className="rounded-md bg-teal-50 p-4 text-teal-900">
+          <p className="font-medium">
+            Importing… {state.done.toLocaleString()} / {state.total.toLocaleString()} rows processed
+          </p>
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-teal-100">
+            <div
+              className="h-full bg-teal-700 transition-all duration-300"
+              style={{ width: `${(state.done / state.total) * 100}%` }}
+            />
+          </div>
+          <p className="mt-2 text-xs text-teal-800">
+            Sent in batches of {CHUNK_SIZE} to stay under serverless time limits.
+            Don&apos;t close the tab.
+          </p>
+        </div>
       )}
 
       {state.kind === 'error' && (

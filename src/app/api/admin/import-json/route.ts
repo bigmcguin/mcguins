@@ -17,7 +17,13 @@ export async function POST(req: Request) {
     );
   }
 
-  let payload: { rows: unknown; publish?: boolean; dryRun?: boolean };
+  let payload: {
+    rows: unknown;
+    publish?: boolean;
+    dryRun?: boolean;
+    batchId?: string;
+    rowOffset?: number;
+  };
   try {
     payload = await req.json();
   } catch {
@@ -26,7 +32,7 @@ export async function POST(req: Request) {
 
   if (!Array.isArray(payload.rows)) {
     return NextResponse.json(
-      { error: 'Body must be { rows: [...], publish?: bool, dryRun?: bool }' },
+      { error: 'Body must be { rows: [...], publish?: bool, dryRun?: bool, batchId?: string, rowOffset?: number }' },
       { status: 400 },
     );
   }
@@ -37,8 +43,16 @@ export async function POST(req: Request) {
     {
       dryRun: payload.dryRun ?? false,
       publish: payload.publish ?? false,
+      batchId: payload.batchId,
     },
   );
+
+  // Shift row numbers in errors so the client can show real positions
+  // when the import is sent in batches.
+  const offset = payload.rowOffset ?? 0;
+  if (offset > 0) {
+    summary.errors = summary.errors.map((e) => ({ ...e, row: e.row + offset }));
+  }
 
   return NextResponse.json(summary);
 }
