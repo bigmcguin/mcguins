@@ -212,11 +212,16 @@ model CommunityImage {
   id            String     @id @default(cuid())
   communityId   String
   community     Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  publicId      String     // Cloudinary
+  // Either publicId (Cloudinary-hosted) or externalUrl (linked from somewhere
+  // else) must be set. The display layer prefers publicId when both are
+  // present, since Cloudinary handles resize/format negotiation.
+  publicId      String?    // Cloudinary
+  externalUrl   String?    // Direct URL to an externally-hosted image
   alt           String
   caption       String?
   order         Int        @default(0)
   isHero        Boolean    @default(false)
+  sourcePageUrl String?    // Provenance: where the image came from
   createdAt     DateTime   @default(now())
 
   @@index([communityId, order])

@@ -58,6 +58,12 @@ export default async function AdminDashboard() {
         >
           Geocode missing coords
         </Link>
+        <Link
+          href="/admin/import-images"
+          className="rounded-lg border border-teal-700 px-5 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-50"
+        >
+          Import images (JSON)
+        </Link>
       </div>
     </div>
   );

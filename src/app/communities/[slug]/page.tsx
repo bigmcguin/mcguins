@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { db } from '@/lib/db';
 import { pageMetadata, communityJsonLd, breadcrumbJsonLd } from '@/lib/seo';
 import { formatFeeRange, STATE_LABELS } from '@/lib/utils';
+import { imageUrl } from '@/lib/images';
 import { EnquiryForm } from '@/components/community/EnquiryForm';
 import { CommunityGallery } from '@/components/community/CommunityGallery';
 import { MapEmbed } from '@/components/map/MapEmbed';
@@ -67,7 +67,7 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
   const hero = c.images[0];
   const jsonLd = communityJsonLd({
     ...c,
-    heroImage: hero ? cloudinaryUrl(hero.publicId, 1600) : null,
+    heroImage: hero ? imageUrl(hero, 1600) : null,
   });
   const breadcrumb = breadcrumbJsonLd([
     { name: 'Home', url: '/' },
@@ -256,8 +256,4 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function cloudinaryUrl(publicId: string, width: number) {
-  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  return `https://res.cloudinary.com/${cloud}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
-}
 

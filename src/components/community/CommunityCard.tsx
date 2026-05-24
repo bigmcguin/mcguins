@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import type { Community, CommunityImage as CommunityImageRow, Suburb } from '@prisma/client';
 import { formatFeeRange } from '@/lib/utils';
+import { imageUrl } from '@/lib/images';
 
 type Props = {
   community: Community & {
@@ -21,7 +21,7 @@ const PLACEHOLDER_TINTS = [
 
 export function CommunityCard({ community }: Props) {
   const img = community.images[0];
-  const src = img ? cloudinaryUrl(img.publicId, 800) : null;
+  const src = img ? imageUrl(img, 800) : null;
   const tint = PLACEHOLDER_TINTS[hashCode(community.slug) % PLACEHOLDER_TINTS.length];
 
   return (
@@ -29,12 +29,12 @@ export function CommunityCard({ community }: Props) {
       <Link href={`/communities/${community.slug}`} className="flex flex-col h-full">
         <div className="relative aspect-[4/3] overflow-hidden">
           {src ? (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={src}
               alt={img?.alt ?? community.name}
-              fill
-              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-              className="object-cover group-hover:scale-[1.03] transition duration-500"
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover group-hover:scale-[1.03] transition duration-500"
             />
           ) : (
             <div className={`absolute inset-0 bg-gradient-to-br ${tint}`}>
@@ -89,12 +89,6 @@ function Pill({ children }: { children: React.ReactNode }) {
       {children}
     </span>
   );
-}
-
-function cloudinaryUrl(publicId: string, width: number) {
-  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  if (!cloud) return null;
-  return `https://res.cloudinary.com/${cloud}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
 }
 
 function hashCode(s: string): number {
