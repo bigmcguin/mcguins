@@ -79,8 +79,11 @@ export async function POST(req: Request) {
     }
   }
 
+  // First pass: parse and match in memory. No DB writes in this loop, so
+  // it's fast even for hundreds of entries.
   const results: Result[] = [];
-  let totalLinks = 0;
+  const linkRows: { communityId: string; facilityId: string }[] = [];
+  const communityIdsToClear = new Set<string>();
 
   for (let i = 0; i < entries.length; i++) {
     const e = entries[i];
@@ -111,23 +114,12 @@ export async function POST(req: Request) {
 
     const communityId = candidates[0];
     const slugs = parseFacilities(e.facilities);
-
-    if (replaceExisting) {
-      await db.communityFacility.deleteMany({ where: { communityId } });
-    }
+    communityIdsToClear.add(communityId);
     for (const slug of slugs) {
       const facilityId = facilityIdBySlug.get(slug);
-      if (!facilityId) continue;
-      await db.communityFacility.upsert({
-        where: { communityId_facilityId: { communityId, facilityId } },
-        update: {},
-        create: { communityId, facilityId },
-      });
+      if (facilityId) linkRows.push({ communityId, facilityId });
     }
-    totalLinks += slugs.length;
 
-    // Count how many comma-separated tokens didn't match anything so the admin
-    // sees coverage for each row.
     const tokens = e.facilities.split(/[,;\n]/).map((t) => t.trim()).filter(Boolean);
     results.push({
       row,
@@ -137,6 +129,23 @@ export async function POST(req: Request) {
       ignored: Math.max(0, tokens.length - slugs.length),
     });
   }
+
+  // Second pass: hit the DB just twice per batch — one bulk delete to clear
+  // existing links for every matched community, one bulk insert to create
+  // the new ones. Through Neon's pooler that's ~50ms total, regardless of
+  // how many entries the batch contained.
+  if (replaceExisting && communityIdsToClear.size > 0) {
+    await db.communityFacility.deleteMany({
+      where: { communityId: { in: Array.from(communityIdsToClear) } },
+    });
+  }
+  if (linkRows.length > 0) {
+    await db.communityFacility.createMany({
+      data: linkRows,
+      skipDuplicates: true,
+    });
+  }
+  const totalLinks = linkRows.length;
 
   const linked = results.filter((r) => r.status === 'linked').length;
   const skipped = results.length - linked;

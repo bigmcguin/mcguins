@@ -8,7 +8,10 @@ type Result =
 
 type Summary = { total: number; linked: number; skipped: number; totalLinks: number; results: Result[] };
 
-const CHUNK_SIZE = 50;
+// Smaller batches mean a failure (timeout, bad row) only loses a few rows,
+// and surfaces faster. The two-query bulk update means even 25 entries
+// per batch barely takes a second on the server.
+const CHUNK_SIZE = 25;
 
 export function FacilitiesAdmin() {
   const [syncState, setSyncState] = useState<{ kind: 'idle' } | { kind: 'running' } | { kind: 'done'; inserted: number; updated: number; total: number } | { kind: 'error'; message: string }>({ kind: 'idle' });
@@ -60,14 +63,36 @@ export function FacilitiesAdmin() {
 
     for (let i = 0; i < entries.length; i += CHUNK_SIZE) {
       const chunk = entries.slice(i, i + CHUNK_SIZE);
-      const res = await fetch('/api/admin/import-facilities', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entries: chunk, replaceExisting: true }),
-      });
+      let res: Response;
+      try {
+        res = await fetch('/api/admin/import-facilities', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entries: chunk, replaceExisting: true }),
+        });
+      } catch (err) {
+        setImportState({
+          kind: 'error',
+          message: `Batch ${i + 1}–${i + chunk.length} network error: ${err instanceof Error ? err.message : String(err)}. ${linked} entries already linked.`,
+        });
+        return;
+      }
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        setImportState({ kind: 'error', message: `Batch starting at ${i + 1} failed: ${body.error ?? res.statusText}` });
+        // The body could be JSON (our own error) or HTML (Vercel timeout
+        // page). Try JSON first; if that fails, read text and trim to
+        // something sensible.
+        const text = await res.text().catch(() => '');
+        let message = '';
+        try {
+          const body = JSON.parse(text);
+          message = body.error ?? text.slice(0, 200);
+        } catch {
+          message = text.slice(0, 200) || res.statusText || `HTTP ${res.status}`;
+        }
+        setImportState({
+          kind: 'error',
+          message: `Batch ${i + 1}–${i + chunk.length} failed (${res.status}): ${message}. ${linked} entries already linked.`,
+        });
         return;
       }
       const summary = (await res.json()) as Summary;
