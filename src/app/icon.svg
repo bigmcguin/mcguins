@@ -1,9 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#0f766e"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="36" fill="#0f766e"/>
   <g fill="#ffffff">
-    <path d="M10 5 L18 5 L20 7 L20 22 L29 22 L29 27 L16 27 L16 7 Z" />
-    <path d="M18 8 L18.8 8 L18.8 23 L28 23 L28 24.5 L18 24.5 Z" fill="#0f766e" />
-    <path d="M3 11 L11 11 L13 13 L13 24 L21 24 L21 29 L9 29 L9 13 Z" />
-    <path d="M11 14 L11.8 14 L11.8 25 L20 25 L20 26.5 L11 26.5 Z" fill="#0f766e" />
+    <!-- Back L (upper-right, behind) -->
+    <path d="M 142 14 L 130 112 L 184 100 L 142 130 L 88 130 L 100 26 Z" />
+    <path d="M 130 44 L 122 108 L 162 100 L 130 120 L 102 120 L 112 52 Z" fill="#0f766e" />
+    <!-- Front L (lower-left, in front) -->
+    <path d="M 94 54 L 78 154 L 158 138 L 96 180 L 22 180 L 40 64 Z" />
+    <path d="M 82 84 L 70 148 L 134 138 L 82 168 L 38 168 L 53 92 Z" fill="#0f766e" />
   </g>
 </svg>

@@ -1,10 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" aria-hidden="true">
   <title>Land Lease Lifestyle</title>
-  <!-- Light placeholder mark for dark backgrounds. Replace with the supplied logo file. -->
   <g fill="#ffffff">
-    <path d="M28 10 L55 10 L62 18 L62 70 L92 70 L92 85 L47 85 L47 18 Z" />
-    <path d="M52 24 L57 24 L57 73 L88 73 L88 78 L52 78 Z" fill="#134e4a" />
-    <path d="M12 30 L39 30 L46 38 L46 78 L72 78 L72 92 L31 92 L31 38 Z" />
-    <path d="M36 44 L41 44 L41 81 L68 81 L68 86 L36 86 Z" fill="#134e4a" />
+    <!-- Back L (upper-right, behind) -->
+    <path d="M 142 14 L 130 112 L 184 100 L 142 130 L 88 130 L 100 26 Z" />
+    <path d="M 130 44 L 122 108 L 162 100 L 130 120 L 102 120 L 112 52 Z" fill="#134e4a" />
+    <!-- Front L (lower-left, in front) -->
+    <path d="M 94 54 L 78 154 L 158 138 L 96 180 L 22 180 L 40 64 Z" />
+    <path d="M 82 84 L 70 148 L 134 138 L 82 168 L 38 168 L 53 92 Z" fill="#134e4a" />
   </g>
 </svg>
