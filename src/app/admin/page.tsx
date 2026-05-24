@@ -107,6 +107,12 @@ export default async function AdminDashboard({
         >
           Import images (JSON)
         </Link>
+        <Link
+          href="/admin/upload-cloudinary"
+          className="rounded-lg border border-teal-700 px-5 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-50"
+        >
+          Upload to Cloudinary
+        </Link>
       </div>
 
       <section className="mt-12 rounded-xl border border-ink-100 bg-white p-6">
