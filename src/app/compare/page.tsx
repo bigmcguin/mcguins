@@ -14,7 +14,7 @@ import { FacilityIcon } from '@/components/community/FacilityIcon';
 export const metadata = pageMetadata({
   title: 'Compare communities',
   description:
-    'Side-by-side comparison of Australian land lease communities — facilities, site fees, location and lifestyle features.',
+    'Side-by-side comparison of Australian land lease communities. Facilities, site fees, location and lifestyle features.',
   path: '/compare',
 });
 
@@ -231,15 +231,15 @@ function ComparisonTable({ communities }: { communities: CommunityForCompare[] }
 
         <tbody className="divide-y divide-ink-100">
           <SectionHeader label="Basics" colSpan={totalCols} />
-          <Row label="Operator" cells={communities.map((c) => c.operator?.name ?? '—')} />
+          <Row label="Operator" cells={communities.map((c) => c.operator?.name ?? '-')} />
           <Row label="Type" cells={communities.map((c) => kindLabel(c.kind))} />
           <Row
             label="Year established"
-            cells={communities.map((c) => (c.yearEstablished ? String(c.yearEstablished) : '—'))}
+            cells={communities.map((c) => (c.yearEstablished ? String(c.yearEstablished) : '-'))}
           />
           <Row
             label="Total homes / sites"
-            cells={communities.map((c) => (c.totalHomes ? c.totalHomes.toLocaleString() : '—'))}
+            cells={communities.map((c) => (c.totalHomes ? c.totalHomes.toLocaleString() : '-'))}
           />
 
           <SectionHeader label="Fees" colSpan={totalCols} />
@@ -265,7 +265,7 @@ function ComparisonTable({ communities }: { communities: CommunityForCompare[] }
           <BoolRow label="Coastal" cells={communities.map((c) => c.coastal)} />
 
           <SectionHeader label="Contact" colSpan={totalCols} />
-          <Row label="Phone" cells={communities.map((c) => c.phone ?? '—')} />
+          <Row label="Phone" cells={communities.map((c) => c.phone ?? '-')} />
           <Row
             label="Website"
             cells={communities.map((c) =>
@@ -280,7 +280,7 @@ function ComparisonTable({ communities }: { communities: CommunityForCompare[] }
                   Visit ↗
                 </a>
               ) : (
-                '—'
+                '-'
               ),
             )}
           />
@@ -331,7 +331,7 @@ function FacilityCategoryRows({
                 </span>
               ) : (
                 <span aria-label="No" className="text-ink-300">
-                  —
+                  -
                 </span>
               )}
             </td>
@@ -378,7 +378,7 @@ function BoolRow({ label, cells }: { label: string; cells: boolean[] }) {
         v ? (
           <span key={i} className="text-teal-700">✓</span>
         ) : (
-          <span key={i} className="text-ink-300">—</span>
+          <span key={i} className="text-ink-300">-</span>
         ),
       )}
     />

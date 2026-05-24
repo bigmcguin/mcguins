@@ -59,7 +59,7 @@ type Result =
 export async function POST(req: Request) {
   const user = await currentUser();
   if (!user || user.role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Forbidden — admin only' }, { status: 403 });
+    return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
   }
 
   if (!cloudinaryConfigured().ok) {

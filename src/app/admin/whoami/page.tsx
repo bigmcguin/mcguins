@@ -67,7 +67,7 @@ export default async function WhoamiPage() {
             </li>
             <li>
               If your DATABASE_URL contains <code>-pooler</code> in the host
-              (the standard Neon pooled URL), that&apos;s fine — the build now
+              (the standard Neon pooled URL), that&apos;s fine. The build now
               auto-derives the direct URL.
             </li>
             <li>
@@ -96,8 +96,8 @@ export default async function WhoamiPage() {
       <dl className="mt-6 grid gap-3 text-sm">
         <Row label="Clerk user id" value={userId} mono />
         <Row label="Database row" value={me ? 'exists' : 'missing'} />
-        <Row label="Email" value={me?.email ?? '—'} />
-        <Row label="Your role" value={me?.role ?? '—'} mono />
+        <Row label="Email" value={me?.email ?? '-'} />
+        <Row label="Your role" value={me?.role ?? '-'} mono />
         <Row label="Total admins in system" value={String(adminCount)} />
       </dl>
 

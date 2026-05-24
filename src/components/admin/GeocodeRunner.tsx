@@ -103,7 +103,7 @@ export function GeocodeRunner({ ids }: { ids: string[] }) {
           <p className="mt-2 text-sm text-ink-700">
             Placed <strong>{state.updated.toLocaleString()}</strong> of {state.total.toLocaleString()} addresses.
             {state.failed.length > 0 && (
-              <> {state.failed.length} address{state.failed.length === 1 ? '' : 'es'} could not be matched — edit those parks manually with their coordinates.</>
+              <> {state.failed.length} address{state.failed.length === 1 ? '' : 'es'} could not be matched. Edit those parks manually with their coordinates.</>
             )}
           </p>
           <p className="mt-3 text-xs text-ink-500">

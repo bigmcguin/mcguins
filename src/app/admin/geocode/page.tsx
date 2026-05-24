@@ -41,7 +41,7 @@ export default async function AdminGeocodePage() {
             <ul className="mt-3 max-h-80 overflow-auto space-y-1">
               {missing.map((m) => (
                 <li key={m.id} className="text-xs text-ink-700">
-                  {m.name} <span className="text-ink-500">— {m.suburb?.name}, {m.state}</span>
+                  {m.name} <span className="text-ink-500">· {m.suburb?.name}, {m.state}</span>
                 </li>
               ))}
             </ul>

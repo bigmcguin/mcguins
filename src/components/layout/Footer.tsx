@@ -14,8 +14,7 @@ export function Footer() {
           </div>
           <p className="mt-4 max-w-prose text-teal-100/80 leading-relaxed">
             Australia&apos;s independent directory for land lease, lifestyle, over-50s and
-            manufactured-home communities. Real photos, verified operators, transparent
-            site fees, and resident reviews.
+            manufactured-home communities.
           </p>
         </div>
         <div>

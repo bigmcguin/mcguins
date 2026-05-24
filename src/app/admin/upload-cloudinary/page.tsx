@@ -33,7 +33,7 @@ export default async function AdminUploadCloudinaryPage() {
       ) : (
         <>
           <div className="mt-6 rounded-md bg-teal-50 p-4 text-sm text-teal-900">
-            Cloudinary is configured — cloud <code>{cfg.cloud}</code>. Ready to upload.
+            Cloudinary is configured. Cloud <code>{cfg.cloud}</code>. Ready to upload.
           </div>
           <CloudinaryUploadForm />
         </>
@@ -65,7 +65,7 @@ function Setup() {
           Tick all three environments (Production, Preview, Development).
         </li>
         <li>Trigger a fresh deploy.</li>
-        <li>Reload this page — it&apos;ll switch to upload mode.</li>
+        <li>Reload this page. It&apos;ll switch to upload mode.</li>
       </ol>
     </div>
   );

@@ -225,7 +225,7 @@ export function ParkEditForm({
             >
               {FEE_FREQS.map((f) => (
                 <option key={f || 'none'} value={f}>
-                  {f || '— none —'}
+                  {f || '(none)'}
                 </option>
               ))}
             </select>

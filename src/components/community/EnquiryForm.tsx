@@ -34,7 +34,7 @@ export function EnquiryForm({ communityId }: { communityId: string }) {
   if (state === 'sent') {
     return (
       <p role="status" className="mt-3 rounded-md bg-brand-50 p-3 text-sm text-brand-800">
-        Thanks — your enquiry has been sent. The community will be in touch shortly.
+        Thanks. Your enquiry has been sent and the community will be in touch shortly.
       </p>
     );
   }

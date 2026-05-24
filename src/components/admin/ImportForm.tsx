@@ -211,7 +211,7 @@ function Result({ dryRun, summary }: { dryRun: boolean; summary: Summary }) {
             {summary.errors.slice(0, 200).map((e, i) => (
               <li key={i}>
                 <span className="text-ink-500">Row {e.row}</span>{' '}
-                <span className="text-ink-900">{e.name ?? '—'}</span>:{' '}
+                <span className="text-ink-900">{e.name ?? '-'}</span>:{' '}
                 <span className="text-red-700">{e.reason}</span>
               </li>
             ))}

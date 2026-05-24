@@ -15,7 +15,7 @@ const display = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE.name} — Compare Australian land lease communities`,
+    default: `${SITE.name}: Compare Australian land lease communities`,
     template: `%s | ${SITE.name}`,
   },
   description:

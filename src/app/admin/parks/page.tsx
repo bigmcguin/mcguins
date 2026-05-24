@@ -108,7 +108,7 @@ export default async function AdminParksPage({ searchParams }: { searchParams: S
             {parks.map((p) => (
               <tr key={p.id} className="border-t border-ink-100 hover:bg-sand-50">
                 <td className="px-4 py-2.5 font-medium text-ink-900">{p.name}</td>
-                <td className="px-4 py-2.5 text-ink-700">{p.suburb?.name ?? '—'}</td>
+                <td className="px-4 py-2.5 text-ink-700">{p.suburb?.name ?? '-'}</td>
                 <td className="px-4 py-2.5 text-ink-700">{p.state}</td>
                 <td className="px-4 py-2.5">
                   <StatusPill status={p.status} />

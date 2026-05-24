@@ -28,7 +28,7 @@ export default async function AdminImportPage() {
           Expected JSON shape
         </summary>
         <p className="mt-3">
-          Each entry should look like the operator spreadsheet — with fields such as{' '}
+          Each entry should look like the operator spreadsheet, with fields such as{' '}
           <code>Village Name</code>, <code>Full Address</code>,{' '}
           <code>Park Chain (Operator)</code>, <code>State</code>, <code>Postcode</code>,{' '}
           <code>Weekly Site Fees</code>, etc.
@@ -36,7 +36,7 @@ export default async function AdminImportPage() {
         <p className="mt-3">
           The required fields per row are: <strong>Village Name</strong>,{' '}
           <strong>Full Address</strong>, <strong>State</strong>, <strong>Postcode</strong>.
-          Everything else is optional — what&apos;s present gets imported, what&apos;s
+          Everything else is optional. What&apos;s present gets imported, what&apos;s
           missing stays blank and can be filled in later.
         </p>
       </details>

@@ -15,7 +15,7 @@ export function slugify(input: string): string {
 }
 
 export function formatCurrencyAUD(cents: number | null | undefined): string {
-  if (cents == null) return '—';
+  if (cents == null) return '-';
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD',

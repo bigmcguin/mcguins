@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 export async function POST() {
   const user = await currentUser();
   if (!user || user.role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Forbidden — admin only' }, { status: 403 });
+    return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
   }
 
   let inserted = 0;

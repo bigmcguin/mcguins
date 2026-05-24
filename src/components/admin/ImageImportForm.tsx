@@ -101,7 +101,7 @@ export function ImageImportForm() {
           onChange={(e) => setReplaceExisting(e.target.checked)}
           className="h-4 w-4"
         />
-        Replace any existing images on matched communities (recommended — otherwise re-imports stack up duplicates)
+        Replace any existing images on matched communities (recommended, otherwise re-imports stack up duplicates)
       </label>
 
       <div>
@@ -144,7 +144,7 @@ function ResultView({ summary }: { summary: Summary }) {
             {skipped.slice(0, 500).map((r, i) => (
               <li key={i}>
                 <span className="text-ink-500">Row {r.row}</span>{' '}
-                <span className="text-ink-900">{r.village ?? '—'}</span>:{' '}
+                <span className="text-ink-900">{r.village ?? '-'}</span>:{' '}
                 <span className="text-red-700">
                   {r.status === 'skipped' ? r.reason : ''}
                 </span>

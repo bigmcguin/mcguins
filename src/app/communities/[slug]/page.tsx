@@ -153,7 +153,7 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
                   <li key={h.id} className="rounded-lg border border-brand-100 bg-white p-4">
                     <h3 className="font-semibold">{h.title}</h3>
                     <p className="text-sm text-brand-700/80">
-                      {h.bedrooms ?? '—'} bed · {h.bathrooms ?? '—'} bath · {h.carSpaces ?? '—'} car
+                      {h.bedrooms ?? '-'} bed · {h.bathrooms ?? '-'} bath · {h.carSpaces ?? '-'} car
                     </p>
                     {h.priceCents && (
                       <p className="mt-1 font-semibold">
@@ -183,7 +183,7 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
           <section>
             <h2 className="font-display text-2xl font-semibold">Reviews</h2>
             {c.reviews.length === 0 ? (
-              <p className="mt-3 text-brand-700/70">No reviews yet — be the first to write one.</p>
+              <p className="mt-3 text-brand-700/70">No reviews yet. Be the first to write one.</p>
             ) : (
               <ul className="mt-4 space-y-4">
                 {c.reviews.map((r) => (
@@ -209,8 +209,8 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
             <h3 className="font-semibold">At a glance</h3>
             <dl className="mt-3 space-y-2 text-sm">
               <Row label="Site fees" value={formatFeeRange(c.siteFeesMin, c.siteFeesMax, c.feeFrequency)} />
-              <Row label="Total homes" value={c.totalHomes?.toString() ?? '—'} />
-              <Row label="Established" value={c.yearEstablished?.toString() ?? '—'} />
+              <Row label="Total homes" value={c.totalHomes?.toString() ?? '-'} />
+              <Row label="Established" value={c.yearEstablished?.toString() ?? '-'} />
               <Row label="Pet friendly" value={c.petFriendly ? 'Yes' : 'No'} />
               <Row label="Over 50s only" value={c.over50sOnly ? 'Yes' : 'No'} />
               <Row label="Coastal" value={c.coastal ? 'Yes' : 'No'} />

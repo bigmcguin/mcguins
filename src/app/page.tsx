@@ -41,9 +41,8 @@ export default async function HomePage() {
             Find your next chapter, on your terms.
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-teal-50/90">
-            Compare {totalCount > 0 ? `${totalCount}+` : ''} lifestyle villages, over-50s
-            communities and land lease estates across Australia. Real photos, site fees,
-            verified operators and resident reviews — all in one place.
+            Compare {totalCount > 0 ? `${totalCount}+` : ''} land lease communities across
+            Australia all in one place.
           </p>
           <div className="mt-10 max-w-3xl">
             <SearchBar />
@@ -62,11 +61,9 @@ export default async function HomePage() {
 
       {/* Trust strip */}
       <section className="border-y border-ink-100 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-          <Trust label="Communities listed" value={totalCount > 0 ? `${totalCount}+` : '—'} />
+        <div className="mx-auto max-w-6xl px-6 py-8 grid grid-cols-2 gap-6 text-sm">
+          <Trust label="Communities listed" value={totalCount > 0 ? `${totalCount}+` : '0'} />
           <Trust label="States covered" value="All 8" />
-          <Trust label="Operators verified" value="Manually" />
-          <Trust label="Independent" value="Free to browse" />
         </div>
       </section>
 
@@ -142,11 +139,11 @@ export default async function HomePage() {
           />
           <Pillar
             title="Built around community"
-            body="Clubhouses, pools, bowling greens, libraries, workshops — most communities are designed for a connected, active lifestyle from day one."
+            body="Clubhouses, pools, bowling greens, libraries and workshops. Most communities are designed for a connected, active lifestyle from day one."
           />
           <Pillar
             title="Free up your savings"
-            body="Selling a long-held family home and downsizing to a land lease community typically frees up significant capital — often eligible for the Centrelink pension."
+            body="Selling a long-held family home and downsizing to a land lease community typically frees up significant capital, often eligible for the Centrelink pension."
           />
         </div>
       </section>

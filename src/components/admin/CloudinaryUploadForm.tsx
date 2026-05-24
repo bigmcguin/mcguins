@@ -160,7 +160,7 @@ export function CloudinaryUploadForm() {
                   .map((r, i) => (
                     <li key={i}>
                       <span className="text-ink-500">Row {r.row}</span>{' '}
-                      <span className="text-ink-900">{r.village ?? '—'}</span>:{' '}
+                      <span className="text-ink-900">{r.village ?? '-'}</span>:{' '}
                       <span className="text-red-700">
                         {r.status === 'skipped' ? r.reason : ''}
                       </span>

@@ -114,7 +114,7 @@ export function FacilitiesAdmin() {
   return (
     <div className="mt-10 space-y-10">
       <section className="rounded-xl border border-ink-100 bg-white p-6">
-        <h2 className="font-display text-xl text-ink-900">Step 1 — Sync taxonomy</h2>
+        <h2 className="font-display text-xl text-ink-900">Step 1: Sync taxonomy</h2>
         <p className="mt-2 text-sm text-ink-700">
           Inserts (or updates) the canonical Facility rows defined in the
           codebase. Safe to run repeatedly.
@@ -139,7 +139,7 @@ export function FacilitiesAdmin() {
       </section>
 
       <section className="rounded-xl border border-ink-100 bg-white p-6">
-        <h2 className="font-display text-xl text-ink-900">Step 2 — Link communities</h2>
+        <h2 className="font-display text-xl text-ink-900">Step 2: Link communities</h2>
         <p className="mt-2 text-sm text-ink-700">
           Paste the same JSON you used for images. The importer reads each
           entry&apos;s <code>facilities</code> text, parses it into canonical
@@ -207,7 +207,7 @@ export function FacilitiesAdmin() {
                     .map((r, i) => (
                       <li key={i}>
                         <span className="text-ink-500">Row {r.row}</span>{' '}
-                        <span className="text-ink-900">{r.village ?? '—'}</span>:{' '}
+                        <span className="text-ink-900">{r.village ?? '-'}</span>:{' '}
                         <span className="text-red-700">{r.status === 'skipped' ? r.reason : ''}</span>
                       </li>
                     ))}

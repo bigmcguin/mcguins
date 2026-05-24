@@ -13,7 +13,7 @@ export const runtime = 'nodejs';
 export async function GET() {
   const user = await currentUser();
   if (!user || user.role !== 'ADMIN') {
-    return NextResponse.json({ error: 'Forbidden — admin only' }, { status: 403 });
+    return NextResponse.json({ error: 'Forbidden: admin only' }, { status: 403 });
   }
 
   const cfg = cloudinaryConfigured();
