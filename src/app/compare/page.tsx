@@ -180,47 +180,54 @@ function ComparisonTable({ communities }: { communities: CommunityForCompare[] }
   const totalCols = communities.length + 1;
 
   return (
-    <div className="mt-10 overflow-x-auto rounded-xl border border-ink-100 bg-white">
-      <table className="w-full min-w-[720px] text-sm">
-        <thead>
-          <tr className="border-b border-ink-100">
-            <th className="sticky left-0 z-10 bg-white px-4 py-4 text-left" />
-            {communities.map((c) => {
-              const heroSrc = c.images[0] ? imageUrl(c.images[0], 600) : null;
-              return (
-                <th key={c.id} className="min-w-[220px] px-4 py-4 align-top text-left font-normal">
-                  <div className="space-y-3">
-                    <div className="relative h-32 w-full overflow-hidden rounded-md bg-sand-100">
-                      {heroSrc ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={heroSrc}
-                          alt={c.name}
-                          className="absolute inset-0 h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-xs text-ink-400">
-                          No photo
-                        </div>
-                      )}
+    <div className="mt-8 sm:mt-10">
+      <p className="mb-2 text-xs text-ink-500 sm:hidden">
+        Swipe sideways to see all columns →
+      </p>
+      <div className="relative overflow-x-auto rounded-xl border border-ink-100 bg-white">
+        <table className="w-full text-xs sm:text-sm">
+          <thead>
+            <tr className="border-b border-ink-100">
+              <th className="sticky left-0 z-10 w-[120px] min-w-[120px] border-r border-ink-100 bg-white px-3 py-3 text-left sm:w-auto sm:min-w-[160px] sm:px-4 sm:py-4" />
+              {communities.map((c) => {
+                const heroSrc = c.images[0] ? imageUrl(c.images[0], 600) : null;
+                return (
+                  <th
+                    key={c.id}
+                    className="min-w-[160px] px-3 py-3 align-top text-left font-normal sm:min-w-[220px] sm:px-4 sm:py-4"
+                  >
+                    <div className="space-y-2 sm:space-y-3">
+                      <div className="relative h-20 w-full overflow-hidden rounded-md bg-sand-100 sm:h-32">
+                        {heroSrc ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={heroSrc}
+                            alt={c.name}
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-xs text-ink-400">
+                            No photo
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <Link
+                          href={`/communities/${c.slug}`}
+                          className="block font-display text-sm leading-tight text-ink-900 hover:text-teal-700 sm:text-lg"
+                        >
+                          {c.name}
+                        </Link>
+                        <p className="mt-0.5 text-[10px] text-ink-500 sm:text-xs">
+                          {c.suburb?.name}, {STATE_LABELS[c.state] ?? c.state}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <Link
-                        href={`/communities/${c.slug}`}
-                        className="font-display text-lg leading-tight text-ink-900 hover:text-teal-700"
-                      >
-                        {c.name}
-                      </Link>
-                      <p className="mt-0.5 text-xs text-ink-500">
-                        {c.suburb?.name}, {STATE_LABELS[c.state] ?? c.state}
-                      </p>
-                    </div>
-                  </div>
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
 
         <tbody className="divide-y divide-ink-100">
           <SectionHeader label="Basics" colSpan={totalCols} />
@@ -288,7 +295,8 @@ function ComparisonTable({ communities }: { communities: CommunityForCompare[] }
             />
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }
@@ -309,14 +317,14 @@ function FacilityCategoryRows({
       <SectionHeader label={CATEGORY_LABELS[category]} colSpan={totalCols} />
       {items.map((row) => (
         <tr key={row.slug}>
-          <th className="sticky left-0 z-10 bg-white px-4 py-2 text-left align-top font-normal text-ink-700">
-            <span className="inline-flex items-center gap-2">
-              <FacilityIcon name={row.icon} size={16} className="shrink-0 text-teal-700" />
-              {row.name}
+          <th className="sticky left-0 z-10 w-[120px] min-w-[120px] border-r border-ink-100 bg-white px-3 py-2 text-left align-top font-normal text-ink-700 sm:w-auto sm:min-w-[160px] sm:px-4">
+            <span className="inline-flex items-start gap-1.5 sm:gap-2">
+              <FacilityIcon name={row.icon} size={14} className="mt-0.5 shrink-0 text-teal-700 sm:h-4 sm:w-4" />
+              <span className="leading-snug">{row.name}</span>
             </span>
           </th>
           {communities.map((c) => (
-            <td key={c.id} className="px-4 py-2 align-top">
+            <td key={c.id} className="px-3 py-2 align-top sm:px-4">
               {row.presentIn.has(c.slug) ? (
                 <span aria-label="Yes" className="text-teal-700">
                   ✓
@@ -339,7 +347,7 @@ function SectionHeader({ label, colSpan }: { label: string; colSpan: number }) {
     <tr className="bg-sand-100">
       <th
         colSpan={colSpan}
-        className="px-4 py-2 text-left text-xs font-medium uppercase tracking-[0.18em] text-ink-600"
+        className="px-3 py-2 text-left text-[10px] font-medium uppercase tracking-[0.18em] text-ink-600 sm:px-4 sm:text-xs"
       >
         {label}
       </th>
@@ -350,11 +358,11 @@ function SectionHeader({ label, colSpan }: { label: string; colSpan: number }) {
 function Row({ label, cells }: { label: string; cells: React.ReactNode[] }) {
   return (
     <tr>
-      <th className="sticky left-0 z-10 bg-white px-4 py-2 text-left align-top font-normal text-ink-700">
+      <th className="sticky left-0 z-10 w-[120px] min-w-[120px] border-r border-ink-100 bg-white px-3 py-2 text-left align-top font-normal leading-snug text-ink-700 sm:w-auto sm:min-w-[160px] sm:px-4">
         {label}
       </th>
       {cells.map((c, i) => (
-        <td key={i} className="px-4 py-2 align-top text-ink-900">
+        <td key={i} className="px-3 py-2 align-top text-ink-900 sm:px-4">
           {c}
         </td>
       ))}
