@@ -42,13 +42,20 @@ export default async function CommunitiesPage({ searchParams }: Props) {
     ...(params.petFriendly && { petFriendly: true }),
     ...(params.over50sOnly && { over50sOnly: true }),
     ...(params.coastal && { coastal: true }),
+    // "Park or operator name" search — matches against the community's own
+    // name OR its operator's name, so "palm lake resort" pulls every park
+    // run by that operator (e.g. Palm Lake Resort Forster Lakes).
     ...(params.name && {
-      name: { contains: params.name, mode: 'insensitive' },
+      OR: [
+        { name: { contains: params.name, mode: 'insensitive' } },
+        { operator: { name: { contains: params.name, mode: 'insensitive' } } },
+      ],
     }),
     ...(params.q && {
       OR: [
         { name: { contains: params.q, mode: 'insensitive' } },
         { suburb: { name: { contains: params.q, mode: 'insensitive' } } },
+        { operator: { name: { contains: params.q, mode: 'insensitive' } } },
         ...(/^\d{4}$/.test(params.q) ? [{ postcode: params.q }] : []),
       ],
     }),
