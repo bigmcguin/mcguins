@@ -9,9 +9,11 @@ export function Footer() {
           <div className="flex items-center gap-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/logo-light.svg"
+              src="/logo-light.png"
               alt=""
               aria-hidden
+              width="36"
+              height="36"
               className="h-9 w-9 object-contain"
             />
             <span className="font-display text-lg font-medium text-white">Land Lease Lifestyle</span>
