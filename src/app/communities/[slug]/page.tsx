@@ -49,12 +49,6 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
       images: { orderBy: { order: 'asc' } },
       facilities: { include: { facility: true } },
       faqs: { orderBy: { order: 'asc' } },
-      reviews: {
-        where: { status: 'APPROVED', deletedAt: null },
-        orderBy: { createdAt: 'desc' },
-        take: 5,
-        include: { user: { select: { name: true } } },
-      },
       homes: {
         where: { status: 'FOR_SALE' },
         orderBy: { listedAt: 'desc' },
@@ -180,27 +174,6 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
             </section>
           )}
 
-          <section>
-            <h2 className="font-display text-2xl font-semibold">Reviews</h2>
-            {c.reviews.length === 0 ? (
-              <p className="mt-3 text-brand-700/70">No reviews yet. Be the first to write one.</p>
-            ) : (
-              <ul className="mt-4 space-y-4">
-                {c.reviews.map((r) => (
-                  <li key={r.id} className="rounded-lg border border-brand-100 bg-white p-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold">{r.title}</h3>
-                      <span aria-label={`${r.rating} out of 5 stars`}>
-                        {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm text-brand-700/80">{r.user.name ?? 'Anonymous'}</p>
-                    <p className="mt-2 whitespace-pre-line">{r.body}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
         </div>
 
         {/* Sidebar */}
