@@ -25,19 +25,29 @@ export default async function AdminImportPage() {
 
       <details className="mt-10 rounded-xl border border-ink-100 bg-white p-5 text-sm text-ink-700">
         <summary className="cursor-pointer font-medium text-ink-900">
-          Expected JSON shape
+          Accepted JSON shapes
         </summary>
         <p className="mt-3">
-          Each entry should look like the operator spreadsheet, with fields such as{' '}
-          <code>Village Name</code>, <code>Full Address</code>,{' '}
-          <code>Park Chain (Operator)</code>, <code>State</code>, <code>Postcode</code>,{' '}
-          <code>Weekly Site Fees</code>, etc.
+          Either of the two common shapes works (auto-detected per row):
         </p>
         <p className="mt-3">
-          The required fields per row are: <strong>Village Name</strong>,{' '}
-          <strong>Full Address</strong>, <strong>State</strong>, <strong>Postcode</strong>.
-          Everything else is optional. What&apos;s present gets imported, what&apos;s
-          missing stays blank and can be filled in later.
+          <strong>Original spreadsheet headers</strong> &mdash; Title Case with spaces,
+          e.g. <code>Village Name</code>, <code>Full Address</code>,{' '}
+          <code>Park Chain (Operator)</code>, <code>State</code>, <code>Postcode</code>,{' '}
+          <code>Weekly Site Fees</code>.
+        </p>
+        <p className="mt-3">
+          <strong>Snake_case dataset</strong> &mdash; the format used by the
+          land_lease_communities_with_images file: <code>village_name</code>,{' '}
+          <code>full_address</code>, <code>operator</code>, <code>state</code>,{' '}
+          <code>postcode</code>, <code>weekly_site_fees</code>, etc.
+        </p>
+        <p className="mt-3">
+          The required fields per row are <strong>village_name</strong> (or{' '}
+          <strong>Village Name</strong>), <strong>full_address</strong>,{' '}
+          <strong>state</strong>, <strong>postcode</strong>. Everything else is
+          optional. What&apos;s present gets imported, what&apos;s missing stays
+          blank and can be filled in later via the editor.
         </p>
       </details>
     </div>

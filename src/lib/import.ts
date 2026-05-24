@@ -10,6 +10,9 @@ import {
 import { slugify } from './utils';
 
 // ── Source row shape ────────────────────────────────────────────────────────
+// The original spreadsheet exported "Title Case With Spaces" headers (still
+// supported). The newer dataset uses snake_case (village_name, full_address,
+// etc.). Both shapes are accepted — see normaliseRow below.
 export type OperatorRow = {
   'Park Chain (Operator)'?: string;
   'Operator Legal Name'?: string;
@@ -40,6 +43,77 @@ export type OperatorRow = {
   'Google Rating'?: string;
   'Google Reviews Count'?: string;
 };
+
+type SnakeRow = {
+  operator?: string;
+  operator_legal_name?: string;
+  abn?: string;
+  acn?: string;
+  entity_type?: string;
+  ownership_type?: string;
+  brand?: string;
+  village_name?: string;
+  full_address?: string;
+  state?: string;
+  region?: string;
+  postcode?: number | string;
+  latitude?: number | string;
+  longitude?: number | string;
+  website_url?: string;
+  phone?: string;
+  email?: string;
+  status?: string;
+  number_of_homes?: number | string;
+  year_established?: number | string;
+  age_policy?: string;
+  pet_policy?: string;
+  security?: string;
+  weekly_site_fees?: string;
+  home_price_range?: string;
+  facilities?: string;
+  google_rating?: string;
+  google_reviews_count?: string;
+};
+
+// Detect "snake_case" rows by looking for the unambiguous field name and
+// remap them to the OperatorRow shape the rest of this module already
+// understands. If a row already uses Title Case headers it passes through
+// unchanged.
+function normaliseRow(row: OperatorRow | SnakeRow): OperatorRow {
+  if (!row || typeof row !== 'object') return row as OperatorRow;
+  if ('Village Name' in row || 'Full Address' in row) return row as OperatorRow;
+  const s = row as SnakeRow;
+  return {
+    'Park Chain (Operator)': s.operator,
+    'Operator Legal Name': s.operator_legal_name,
+    ABN: s.abn,
+    ACN: s.acn,
+    'Entity Type': s.entity_type,
+    'Ownership Type': s.ownership_type,
+    'Brand/Sub-Brand': s.brand,
+    'Village Name': s.village_name,
+    'Full Address': s.full_address,
+    State: s.state,
+    'Region/Area': s.region,
+    Postcode: s.postcode,
+    Latitude: s.latitude,
+    Longitude: s.longitude,
+    'Website URL': s.website_url,
+    Phone: s.phone,
+    Email: s.email,
+    Status: s.status,
+    'Number of Homes/Sites': s.number_of_homes,
+    'Year Established': s.year_established,
+    'Age Policy': s.age_policy,
+    'Pet Policy': s.pet_policy,
+    Security: s.security,
+    'Weekly Site Fees': s.weekly_site_fees,
+    'Home Price Range': s.home_price_range,
+    Facilities: s.facilities,
+    'Google Rating': s.google_rating,
+    'Google Reviews Count': s.google_reviews_count,
+  };
+}
 
 // ── Parsing helpers ─────────────────────────────────────────────────────────
 
@@ -304,7 +378,7 @@ export async function importCommunities(
   let skipped = 0;
 
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
+    const row = normaliseRow(rows[i] as OperatorRow);
     const rowNum = i + 1;
     try {
       const result = await importRow(db, row, statusFor(row.Status, publish), batchId, dryRun);
