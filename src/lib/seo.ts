@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const SITE_NAME = 'Australian Land Lease Directory';
+const SITE_NAME = 'Land Lease Lifestyle';
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://example.com.au';
 
 export function pageMetadata(opts: {

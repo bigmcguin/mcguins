@@ -14,14 +14,15 @@ export function Header() {
     <header className="sticky top-0 z-40 bg-sand-50/85 backdrop-blur-md border-b border-ink-100">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2.5">
-          <span aria-hidden className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-teal-700 text-white font-display text-lg">
-            ◆
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.svg"
+            alt=""
+            aria-hidden
+            className="h-9 w-9 object-contain"
+          />
           <span className="font-display text-lg font-medium text-ink-900 leading-none">
-            AU Land Lease
-            <span className="block text-[10px] uppercase tracking-[0.18em] text-ink-500 mt-0.5">
-              Directory
-            </span>
+            Land Lease Lifestyle
           </span>
         </Link>
         <nav aria-label="Primary" className="hidden md:flex items-center gap-7 text-sm">
