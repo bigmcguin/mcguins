@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { parseLooseJson } from '@/lib/loose-json';
 
 type Result =
   | { row: number; village?: string; status: 'linked'; matched: number; ignored: number }
@@ -45,9 +46,9 @@ export function FacilitiesAdmin() {
   async function runImport() {
     let entries: unknown[];
     try {
-      const parsed = JSON.parse(text);
+      const parsed = parseLooseJson(text);
       if (!Array.isArray(parsed)) throw new Error('JSON must be an array');
-      entries = parsed;
+      entries = parsed as unknown[];
     } catch (err) {
       setImportState({ kind: 'error', message: err instanceof Error ? err.message : String(err) });
       return;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { parseLooseJson } from '@/lib/loose-json';
 
 type Result =
   | { row: number; village?: string; status: 'imported' }
@@ -28,7 +29,7 @@ export function ImageImportForm() {
   async function submit() {
     let entries: unknown;
     try {
-      entries = JSON.parse(text);
+      entries = parseLooseJson(text);
     } catch (err) {
       setState({
         kind: 'error',

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { parseLooseJson } from '@/lib/loose-json';
 
 type Result =
   | { row: number; village?: string; status: 'uploaded'; publicId: string }
@@ -31,7 +32,7 @@ export function CloudinaryUploadForm() {
   async function submit() {
     let entries: unknown[];
     try {
-      const parsed = JSON.parse(text);
+      const parsed = parseLooseJson(text);
       if (!Array.isArray(parsed)) throw new Error('JSON must be an array');
       entries = parsed;
     } catch (err) {

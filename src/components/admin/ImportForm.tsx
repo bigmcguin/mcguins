@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { parseLooseJson } from '@/lib/loose-json';
 
 type Summary = {
   total: number;
@@ -34,7 +35,7 @@ export function ImportForm() {
   async function submit(opts: { dryRun: boolean; publish: boolean }) {
     let rows: unknown[];
     try {
-      const parsed = JSON.parse(text);
+      const parsed = parseLooseJson(text);
       if (!Array.isArray(parsed)) {
         throw new Error('The JSON must be an array (start with [ and end with ]).');
       }
