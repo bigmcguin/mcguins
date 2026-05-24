@@ -6,9 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl is omitted on purpose: requiring it as an env var breaks the
+  // schema load when only DATABASE_URL is set. The build's db-sync script
+  // derives a direct (non-pooler) URL from DATABASE_URL automatically when
+  // needed, so a separate variable isn't required.
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
