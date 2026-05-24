@@ -3,10 +3,19 @@
 import { useState } from 'react';
 import type { Community } from '@prisma/client';
 
+type FacilityRow = {
+  slug: string;
+  name: string;
+  category: string;
+  icon: string | null;
+};
+
 type Props = {
   park: Community;
   action: (formData: FormData) => Promise<void>;
   deleteAction: () => Promise<void>;
+  allFacilities: FacilityRow[];
+  checkedFacilitySlugs: string[];
 };
 
 const STATUSES = ['DRAFT', 'UNVERIFIED', 'PUBLISHED', 'CLAIMED', 'ARCHIVED'] as const;
@@ -20,9 +29,36 @@ const KINDS = [
 ] as const;
 const FEE_FREQS = ['', 'WEEKLY', 'FORTNIGHTLY', 'MONTHLY', 'ANNUALLY'] as const;
 
-export function ParkEditForm({ park, action, deleteAction }: Props) {
+const CATEGORY_LABELS: Record<string, string> = {
+  'pools-wellness': 'Pools & wellness',
+  fitness: 'Fitness',
+  'indoor-recreation': 'Indoor recreation',
+  'outdoor-recreation': 'Outdoor recreation',
+  'food-social': 'Food & social',
+  practical: 'Practical',
+  'gardens-nature': 'Gardens & nature',
+  'pet-family': 'Pets & family',
+  'access-services': 'Access & services',
+};
+
+export function ParkEditForm({
+  park,
+  action,
+  deleteAction,
+  allFacilities,
+  checkedFacilitySlugs,
+}: Props) {
   const [pending, setPending] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const checked = new Set(checkedFacilitySlugs);
+
+  // Group facilities by category, preserving CATEGORY_LABELS order
+  const facilitiesByCategory = new Map<string, FacilityRow[]>();
+  for (const f of allFacilities) {
+    const list = facilitiesByCategory.get(f.category) ?? [];
+    list.push(f);
+    facilitiesByCategory.set(f.category, list);
+  }
 
   async function onDelete() {
     const confirmed = window.confirm(
@@ -197,7 +233,33 @@ export function ParkEditForm({ park, action, deleteAction }: Props) {
         </div>
       </Section>
 
-      <Section title="Features">
+      <Section title="Facilities">
+        <p className="text-xs text-ink-500">
+          Tick every facility the community offers. These power the icon grid on
+          the public page and side-by-side comparisons.
+        </p>
+        <div className="space-y-4">
+          {Object.entries(CATEGORY_LABELS)
+            .filter(([cat]) => (facilitiesByCategory.get(cat) ?? []).length > 0)
+            .map(([cat, label]) => (
+              <div key={cat}>
+                <h4 className="text-xs font-medium uppercase tracking-wider text-ink-500">{label}</h4>
+                <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3">
+                  {(facilitiesByCategory.get(cat) ?? []).map((f) => (
+                    <Checkbox
+                      key={f.slug}
+                      name={`facility:${f.slug}`}
+                      defaultChecked={checked.has(f.slug)}
+                      label={f.name}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+        </div>
+      </Section>
+
+      <Section title="Other features">
         <div className="grid grid-cols-2 gap-3">
           <Checkbox name="petFriendly" defaultChecked={park.petFriendly} label="Pet friendly" />
           <Checkbox name="over50sOnly" defaultChecked={park.over50sOnly} label="Over 50s only" />

@@ -75,6 +75,24 @@ async function savePark(id: string, formData: FormData) {
     },
   });
 
+  // Re-link facilities. We read all keys named "facility:<slug>" — the form
+  // renders a checkbox per canonical facility, and the ones the admin ticked
+  // come through as 'on'. Replace the join rows wholesale; this is small
+  // (<50 inserts) and idempotent.
+  const tickedSlugs = Array.from(formData.keys())
+    .filter((k) => k.startsWith('facility:'))
+    .map((k) => k.slice('facility:'.length));
+  const facilityRows = tickedSlugs.length > 0
+    ? await db.facility.findMany({ where: { slug: { in: tickedSlugs } }, select: { id: true } })
+    : [];
+  await db.communityFacility.deleteMany({ where: { communityId: id } });
+  if (facilityRows.length > 0) {
+    await db.communityFacility.createMany({
+      data: facilityRows.map((f) => ({ communityId: id, facilityId: f.id })),
+      skipDuplicates: true,
+    });
+  }
+
   revalidatePath('/admin/parks');
   revalidatePath(`/admin/parks/${id}/edit`);
   redirect('/admin/parks');
@@ -106,14 +124,24 @@ export default async function EditParkPage({ params }: { params: { id: string } 
     );
   }
 
-  const park = await db.community.findUnique({
-    where: { id: params.id },
-    include: { suburb: { select: { name: true } } },
-  });
+  const [park, allFacilities] = await Promise.all([
+    db.community.findUnique({
+      where: { id: params.id },
+      include: {
+        suburb: { select: { name: true } },
+        facilities: { select: { facility: { select: { slug: true } } } },
+      },
+    }),
+    db.facility.findMany({
+      orderBy: [{ category: 'asc' }, { name: 'asc' }],
+      select: { slug: true, name: true, category: true, icon: true },
+    }),
+  ]);
   if (!park) notFound();
 
   const save = savePark.bind(null, park.id);
   const remove = deletePark.bind(null, park.id);
+  const checkedSlugs = new Set(park.facilities.map((f) => f.facility.slug));
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -126,7 +154,13 @@ export default async function EditParkPage({ params }: { params: { id: string } 
       <p className="mt-1 text-sm text-ink-600">
         {park.suburb?.name}, {park.state} {park.postcode}
       </p>
-      <ParkEditForm park={park} action={save} deleteAction={remove} />
+      <ParkEditForm
+        park={park}
+        action={save}
+        deleteAction={remove}
+        allFacilities={allFacilities}
+        checkedFacilitySlugs={Array.from(checkedSlugs)}
+      />
     </div>
   );
 }

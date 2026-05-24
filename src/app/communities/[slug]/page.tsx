@@ -7,6 +7,7 @@ import { imageUrl } from '@/lib/images';
 import { EnquiryForm } from '@/components/community/EnquiryForm';
 import { CommunityGallery } from '@/components/community/CommunityGallery';
 import { MapEmbed } from '@/components/map/MapEmbed';
+import { FacilitiesGrid } from '@/components/community/FacilitiesGrid';
 
 export const revalidate = 60 * 60 * 24 * 7; // weekly ISR
 
@@ -133,13 +134,14 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
           {c.facilities.length > 0 && (
             <section>
               <h2 className="font-display text-2xl font-semibold">Facilities</h2>
-              <ul className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {c.facilities.map((f) => (
-                  <li key={f.facilityId} className="rounded-md bg-white border border-brand-100 px-3 py-2">
-                    {f.facility.name}
-                  </li>
-                ))}
-              </ul>
+              <FacilitiesGrid
+                items={c.facilities.map((f) => ({
+                  slug: f.facility.slug,
+                  name: f.facility.name,
+                  category: f.facility.category,
+                  icon: f.facility.icon ?? 'map-pin',
+                }))}
+              />
             </section>
           )}
 
