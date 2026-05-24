@@ -19,9 +19,11 @@ export function cloudinaryConfigured(): {
   apiKey?: string;
   apiSecret?: string;
 } {
-  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  // Defensive trim — values pasted into Vercel sometimes pick up trailing
+  // whitespace/newlines, which silently breaks the HMAC signature.
+  const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD?.trim();
+  const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
+  const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
   if (!cloud || !apiKey || !apiSecret) return { ok: false };
   return { ok: true, cloud, apiKey, apiSecret };
 }
