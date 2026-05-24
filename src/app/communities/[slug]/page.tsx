@@ -6,6 +6,7 @@ import { pageMetadata, communityJsonLd, breadcrumbJsonLd } from '@/lib/seo';
 import { formatFeeRange, STATE_LABELS } from '@/lib/utils';
 import { EnquiryForm } from '@/components/community/EnquiryForm';
 import { CommunityGallery } from '@/components/community/CommunityGallery';
+import { MapEmbed } from '@/components/map/MapEmbed';
 
 export const revalidate = 60 * 60 * 24 * 7; // weekly ISR
 
@@ -225,15 +226,20 @@ export default async function CommunityProfilePage({ params }: { params: { slug:
           </div>
 
           {c.latitude && c.longitude && (
-            <div className="overflow-hidden rounded-xl border border-brand-100">
-              <Image
-                src={mapboxStaticUrl(c.latitude, c.longitude)}
-                alt={`Map of ${c.name}`}
-                width={600}
-                height={400}
-                className="w-full h-auto"
-              />
-            </div>
+            <MapEmbed
+              single
+              height={300}
+              points={[
+                {
+                  id: c.id,
+                  name: c.name,
+                  lat: c.latitude,
+                  lng: c.longitude,
+                  state: c.state,
+                  suburb: c.suburb?.name,
+                },
+              ]}
+            />
           )}
         </aside>
       </div>
@@ -255,7 +261,3 @@ function cloudinaryUrl(publicId: string, width: number) {
   return `https://res.cloudinary.com/${cloud}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
 }
 
-function mapboxStaticUrl(lat: number, lng: number) {
-  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-  return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-l+2f724e(${lng},${lat})/${lng},${lat},14,0/600x400@2x?access_token=${token}`;
-}
