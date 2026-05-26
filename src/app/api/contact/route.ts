@@ -17,10 +17,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const to = process.env.CONTACT_INBOX ?? process.env.ENQUIRY_INBOX;
-  if (resend && to) {
+  const to = process.env.CONTACT_INBOX ?? 'brandwagon.marketing@outlook.com';
+  const from = process.env.CONTACT_FROM ?? 'Land Lease Lifestyle <onboarding@resend.dev>';
+  if (resend) {
     await resend.emails.send({
-      from: 'contact@example.com.au',
+      from,
       to,
       replyTo: data.email,
       subject: data.subject ? `Contact: ${data.subject}` : 'New contact form submission',

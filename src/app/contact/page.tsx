@@ -20,10 +20,6 @@ export default function ContactPage() {
       <div className="mt-8 rounded-2xl border border-ink-100 bg-white p-6 sm:p-8 shadow-card">
         <ContactForm />
       </div>
-
-      <p className="mt-6 text-sm text-ink-500">
-        Prefer email? Reach us at <span className="text-ink-700">[contact email]</span>.
-      </p>
     </div>
   );
 }
