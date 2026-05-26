@@ -42,7 +42,6 @@ export const STATE_LABELS: Record<string, string> = {
   NT: 'Northern Territory',
   QLD: 'Queensland',
   SA: 'South Australia',
-  TAS: 'Tasmania',
   VIC: 'Victoria',
   WA: 'Western Australia',
 };

@@ -63,7 +63,7 @@ export default async function HomePage() {
       <section className="border-y border-ink-100 bg-white">
         <div className="mx-auto max-w-6xl px-6 py-8 grid grid-cols-2 gap-6 text-sm">
           <Trust label="Communities listed" value={totalCount > 0 ? `${totalCount}+` : '0'} />
-          <Trust label="States covered" value="All 8" />
+          <Trust label="States covered" value="All 7" />
         </div>
       </section>
 

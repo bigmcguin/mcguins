@@ -42,7 +42,6 @@ export function Footer() {
           <p className="font-medium text-white">About</p>
           <ul className="mt-3 space-y-1.5">
             <li><Link href="/blog" className="text-teal-100/80 hover:text-white">Guides &amp; insights</Link></li>
-            <li><Link href="/operators/claim" className="text-teal-100/80 hover:text-white">List your community</Link></li>
             <li><Link href="/about" className="text-teal-100/80 hover:text-white">About us</Link></li>
             <li><Link href="/contact" className="text-teal-100/80 hover:text-white">Contact</Link></li>
             <li><Link href="/privacy" className="text-teal-100/80 hover:text-white">Privacy</Link></li>
