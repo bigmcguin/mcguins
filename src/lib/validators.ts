@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const AU_STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'] as const;
+export const AU_STATES = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'VIC', 'WA'] as const;
 
 export const communitySearchSchema = z.object({
   q: z.string().optional(),

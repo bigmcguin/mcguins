@@ -51,7 +51,7 @@ export function SearchBar() {
           className="w-full h-full rounded-xl bg-sand-50 px-4 py-4 text-ink-900 appearance-none"
         >
           <option value="">All states</option>
-          {['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'].map((s) => (
+          {['NSW', 'VIC', 'QLD', 'WA', 'SA', 'ACT', 'NT'].map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
