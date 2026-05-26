@@ -42,6 +42,16 @@ export const enquirySchema = z.object({
   website: z.string().max(0).optional(),
 });
 
+export const contactSchema = z.object({
+  name: z.string().min(2).max(100),
+  email: z.string().email(),
+  phone: z.string().max(40).optional(),
+  subject: z.string().max(160).optional(),
+  message: z.string().min(10).max(2000),
+  // Honeypot — must be empty
+  website: z.string().max(0).optional(),
+});
+
 export const reviewSchema = z.object({
   communityId: z.string().cuid(),
   rating: z.number().int().min(1).max(5),
