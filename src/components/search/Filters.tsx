@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { CommunitySearch } from '@/lib/validators';
 import { FEATURE_FILTERS, type FeatureFilterKey } from '@/lib/feature-filters';
 
-const STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT'] as const;
+const STATES = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'ACT', 'NT'] as const;
 
 type DraftFilters = {
   name: string;
