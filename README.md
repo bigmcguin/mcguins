@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/logo.png" alt="Land Lease Lifestyle" width="380">
+</p>
+
 # Australian Land Lease Directory
 
 A modern, SEO-first comparison and directory platform for Australia's land lease
